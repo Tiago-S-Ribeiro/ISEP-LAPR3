@@ -10,7 +10,7 @@ import java.util.List;
 
 /**
  *
- * @author jujps00
+ * @author G25
  */
 public class Park extends PointInterest{
 

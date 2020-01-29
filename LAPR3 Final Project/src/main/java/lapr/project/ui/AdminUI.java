@@ -20,7 +20,7 @@ import static lapr.project.ui.LoginUI.isNumeric;
 
 /**
  *
- * @author TiagoRibeiro
+ * @author Tiago Ribeiro
  */
 public class AdminUI {
 

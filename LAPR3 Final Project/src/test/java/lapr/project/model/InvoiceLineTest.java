@@ -17,7 +17,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  *
- * @author jujps00
+ * @author G25
  */
 public class InvoiceLineTest {
 
@@ -135,7 +135,7 @@ public class InvoiceLineTest {
         System.out.println("getDate");
         String expResult = "30/12/2019";
         String result = invoiceLines.getDate();
-        
+
         assertEquals(expResult, result);
     }
 
@@ -146,10 +146,10 @@ public class InvoiceLineTest {
     public void testSetDate() {
         System.out.println("setDate");
         String expResult = "NEW_DATE_STRING_TEST";
-        
+
         invoiceLines.setDate(expResult);
         String result = invoiceLines.getDate();
-        
+
         assertEquals(expResult, result);
     }
 
@@ -162,7 +162,7 @@ public class InvoiceLineTest {
         int expResult = 10;
         int result = invoiceLines.getEarnedPoints();
         assertEquals(expResult, result);
-        
+
     }
 
     /**
@@ -175,5 +175,5 @@ public class InvoiceLineTest {
         invoiceLines.setEarnedPoints(earnedPoints);
         assertEquals(9, invoiceLines.getEarnedPoints());
     }
-    
+
 }

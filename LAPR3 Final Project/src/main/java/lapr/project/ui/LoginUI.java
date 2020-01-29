@@ -15,7 +15,7 @@ import lapr.project.model.User;
 
 /**
  *
- * @author TiagoRibeiro
+ * @author Tiago Ribeiro
  */
 public class LoginUI {
     

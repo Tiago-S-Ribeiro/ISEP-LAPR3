@@ -18,7 +18,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  *
- * @author G025
+ * @author G25
  */
 public class ScooterTest {
 

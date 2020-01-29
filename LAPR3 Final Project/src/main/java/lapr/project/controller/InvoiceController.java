@@ -13,10 +13,10 @@ import lapr.project.model.InvoiceLine;
 
 /**
  *
- * @author jujps00
+ * @author G25
  */
 public class InvoiceController {
-    
+
     private final InvoiceDataHandler invoiceDataHandler;
 
     /**
@@ -29,9 +29,9 @@ public class InvoiceController {
 
     public Invoice addInvoice(int idUser, int month) throws SQLException {
         Invoice invoice = new Invoice(idUser);
-        
+
         invoice.setIdInvoice(invoiceDataHandler.addInvoice(invoice, month));
-        
+
         return invoice;
     }
 

@@ -17,7 +17,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  *
- * @author TiagoRibeiro
+ * @author Tiago Ribeiro
  */
 public class RentalTest {
     

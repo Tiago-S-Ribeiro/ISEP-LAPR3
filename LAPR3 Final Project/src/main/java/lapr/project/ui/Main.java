@@ -9,7 +9,7 @@ import java.sql.SQLException;
 
 /**
  *
- * @author TiagoRibeiro
+ * @author Tiago Ribeiro
  */
 public class Main {
     

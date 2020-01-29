@@ -13,7 +13,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  *
- * @author berna
+ * @author Bernardo Carvalho
  */
 public class AdjacencyMatrixTest {
     

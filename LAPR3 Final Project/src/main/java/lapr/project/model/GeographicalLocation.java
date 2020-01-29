@@ -7,7 +7,7 @@ package lapr.project.model;
 
 /**
  *
- * @author jujps00
+ * @author G25
  */
 public class GeographicalLocation {
 

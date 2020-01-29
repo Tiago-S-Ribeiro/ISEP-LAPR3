@@ -22,7 +22,7 @@ import static org.mockito.Mockito.when;
 
 /**
  *
- * @author jujps00
+ * @author G25
  */
 public class InvoiceControllerTest {
 

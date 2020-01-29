@@ -15,7 +15,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  *
- * @author jujps00
+ * @author G25
  */
 public class InvoiceTest {
 

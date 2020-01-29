@@ -13,7 +13,7 @@ import javax.activation.DataSource;
 
 /**
  *
- * @author TiagoRibeiro
+ * @author Tiago Ribeiro
  */
 public class HTMLDataSource implements DataSource {
 

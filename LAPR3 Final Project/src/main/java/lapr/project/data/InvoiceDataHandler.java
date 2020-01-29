@@ -22,7 +22,7 @@ import oracle.jdbc.OracleTypes;
 
 /**
  *
- * @author jujps00
+ * @author G25
  */
 public class InvoiceDataHandler {
 

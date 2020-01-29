@@ -28,7 +28,7 @@ import static org.mockito.Matchers.any;
 
 /**
  *
- * @author Beatriz Ribeiro
+ * @author Tiago Ribeiro
  */
 public class VehicleControllerTest {
 

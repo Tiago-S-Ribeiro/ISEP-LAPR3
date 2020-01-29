@@ -7,7 +7,7 @@ package lapr.project.utils;
 
 /**
  *
- * @author jujps00
+ * @author G25
  */
 public class PhysicsAlgorithms {
 

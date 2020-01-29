@@ -17,7 +17,7 @@ import lapr.project.model.User;
 
 /**
  *
- * @author jujps00
+ * @author G25
  */
 public class InvoicePaymentController {
 

@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test;
 
 /**
  *
- * @author jujps00
+ * @author G25
  */
 public class PhysicsAlgorithmsTest {
 

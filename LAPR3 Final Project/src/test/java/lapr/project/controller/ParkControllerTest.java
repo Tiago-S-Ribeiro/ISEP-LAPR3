@@ -25,7 +25,7 @@ import static org.mockito.Mockito.when;
 
 /**
  *
- * @author Beatriz Ribeiro
+ * @author Tiago Ribeiro
  */
 public class ParkControllerTest {
 

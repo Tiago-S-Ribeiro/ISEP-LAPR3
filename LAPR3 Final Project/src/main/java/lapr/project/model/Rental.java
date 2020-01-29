@@ -7,7 +7,7 @@ package lapr.project.model;
 
 /**
  *
- * @author TiagoRibeiro
+ * @author Tiago Ribeiro
  */
 public class Rental implements Comparable<Rental>{
 

@@ -10,7 +10,7 @@ import static org.junit.Assert.*;
 
 /**
  *
- * @author berna
+ * @author Bernardo Carvalho
  */
 public class MatrixAlgorithmsTest {
     

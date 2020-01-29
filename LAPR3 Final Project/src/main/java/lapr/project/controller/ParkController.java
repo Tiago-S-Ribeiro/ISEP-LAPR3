@@ -22,12 +22,12 @@ import lapr.project.model.Vehicle;
 
 /**
  *
- * @author TiagoRibeiro
+ * @author Tiago Ribeiro
  */
 public class ParkController {
-    
+
     private final ParkDataHandler parkDataHandler;
-    
+
     public ParkController(ParkDataHandler parkDataHandler) {
         this.parkDataHandler = parkDataHandler;
     }
@@ -55,11 +55,11 @@ public class ParkController {
         capacities.add(new Capacity(Vehicle.BICYCLE_TYPE_ID, maxCapacityBike));
         capacities.add(new Capacity(Vehicle.SCOOTER_TYPE_ID, maxCapacityScooter));
         park.setCapacity(capacities);
-        
+
         park.setIdPoint(parkDataHandler.addPark(park));
-        
+
         return park;
-        
+
     }
 
     /**
@@ -68,9 +68,9 @@ public class ParkController {
      */
     public Park getPark(int id) {
         Park park = null;
-        
+
         park = parkDataHandler.getById(id);
-        
+
         return park;
     }
 
@@ -82,28 +82,28 @@ public class ParkController {
      * @return true if operation was successful, false if not
      */
     public boolean removePark(int idPark) throws SQLException {
-        
+
         boolean removed = false;
-        
+
         removed = parkDataHandler.removePark(idPark);
-        
+
         return removed;
     }
-    
+
     /**
-     * 
+     *
      * @param latitude
      * @param longitude
      * @param radius
      * @return
      * @throws ClassNotFoundException
-     * @throws SQLException 
+     * @throws SQLException
      */
     public List<Pair<Double, Park>> getNearestParks(double latitude, double longitude, double radius) throws ClassNotFoundException, SQLException {
         List<Pair<Double, Park>> nearbyParks = new ArrayList<>();
-        
+
         nearbyParks = parkDataHandler.getNearestParks(latitude, longitude, radius);
-        
+
         return nearbyParks;
     }
 
@@ -112,12 +112,12 @@ public class ParkController {
      * @throws SQLException
      */
     public List<Park> getAllParks() throws SQLException {
-        
+
         List<Park> list = null;
-        
+
         list = parkDataHandler.getAllParks();
         return list;
-        
+
     }
 
     /**
@@ -130,9 +130,9 @@ public class ParkController {
      */
     public int checkParkFreeSpots(int parkId, int userId) {
         int spacesAvailable = 0;
-        
+
         spacesAvailable = parkDataHandler.checkParkFreeSpots(parkId, userId);
-        
+
         return spacesAvailable;
     }
 
@@ -149,7 +149,7 @@ public class ParkController {
         boolean actionSucess = false;
         UserController uc = new UserController(new UserDataHandler());
         actionSucess = parkDataHandler.parkVehicle(parkId, idUser);
-        
+
         if (actionSucess == true) {
             try {
                 User user = uc.getById(idUser);
@@ -172,12 +172,12 @@ public class ParkController {
      * @return newly created POI
      */
     public PointInterest addPOI(double latitude, double longitude, double elevation, String description) throws SQLException {
-        
+
         GeographicalLocation geo = new GeographicalLocation(latitude, longitude, elevation);
         PointInterest poi = new PointInterest(geo, description);
-        
+
         poi.setIdPoint(parkDataHandler.addPOI(poi));
-        
+
         return poi;
     }
 
@@ -189,58 +189,58 @@ public class ParkController {
      * @return true or false on wether the park was properly updated or not
      */
     public boolean updatePark(int idPark, String description) throws SQLException {
-        
+
         boolean updated = false;
-        
+
         updated = parkDataHandler.updatePark(idPark, description);
-        
+
         return updated;
-    }
-    
-    /**
-     * 
-     * @param latitude
-     * @param longitude
-     * @return 
-     */
-    public Park getParkByCoordinates(double latitude, double longitude) {
-        
-        return parkDataHandler.getParkOfCoordinates(latitude, longitude);
-        
-    }
-    
-    /**
-     * 
-     * @param refPark
-     * @return 
-     */
-    public Park getParkByRefPark(String refPark) {
-        
-        return parkDataHandler.getParkOfReference(refPark);
-        
-    }
-    
-    /**
-     * 
-     * @param idpark1
-     * @return 
-     */
-    public LinkedList<Pair<Scooter, Double>> calculateTimeNeededToChargeTotalyByPark(int idpark1) {
-        
-        return parkDataHandler.calculateTimeNeededToChargeTotalyByPark(idpark1);
-        
     }
 
     /**
-     * 
+     *
+     * @param latitude
+     * @param longitude
+     * @return
+     */
+    public Park getParkByCoordinates(double latitude, double longitude) {
+
+        return parkDataHandler.getParkOfCoordinates(latitude, longitude);
+
+    }
+
+    /**
+     *
+     * @param refPark
+     * @return
+     */
+    public Park getParkByRefPark(String refPark) {
+
+        return parkDataHandler.getParkOfReference(refPark);
+
+    }
+
+    /**
+     *
+     * @param idpark1
+     * @return
+     */
+    public LinkedList<Pair<Scooter, Double>> calculateTimeNeededToChargeTotalyByPark(int idpark1) {
+
+        return parkDataHandler.calculateTimeNeededToChargeTotalyByPark(idpark1);
+
+    }
+
+    /**
+     *
      * @param idpark1
      * @param scooterDescription
-     * @return 
+     * @return
      */
     public Pair<Scooter, Double> calculateTimeNeededToChargeTotalyByScooter(int idpark1, String scooterDescription) {
-        
+
         return parkDataHandler.calculateTimeNeededToChargeTotalyByScooter(idpark1, scooterDescription);
-        
+
     }
 
     /**
@@ -251,9 +251,9 @@ public class ParkController {
      */
     public int checkParkFreeScooterSpots(int parkId) {
         int spacesAvailable = 0;
-        
+
         spacesAvailable = parkDataHandler.checkParkFreeScooterSpots(parkId);
-        
+
         return spacesAvailable;
     }
 
@@ -265,57 +265,57 @@ public class ParkController {
      */
     public int checkParkFreeBicycleSpots(int parkId) {
         int freeBikeSpots = 0;
-        
+
         freeBikeSpots = parkDataHandler.checkParkFreeBicycleSpots(parkId);
-        
+
         return freeBikeSpots;
     }
-    
+
     /**
-     * 
+     *
      * @param idPointFrom
      * @param idPointTo
      * @param kinetic
      * @param windDirection
      * @param windSpeed
      * @return
-     * @throws SQLException 
+     * @throws SQLException
      */
     public boolean addPath(int idPointFrom, int idPointTo, double kinetic, float windDirection, float windSpeed) throws SQLException {
         boolean addSuccess = false;
-        
+
         PointInterest from = parkDataHandler.getPoiById(idPointFrom);
         PointInterest to = parkDataHandler.getPoiById(idPointTo);
-        
+
         addSuccess = parkDataHandler.addPath(new Path(from, to, kinetic, windDirection, windSpeed));
-        
+
         return addSuccess;
     }
-    
+
     /**
-     * 
+     *
      * @param latitude
      * @param longitude
-     * @return 
+     * @return
      */
     public PointInterest getPointByCoordinates(double latitude, double longitude) {
         return parkDataHandler.getPointByCoordinates(latitude, longitude);
     }
-    
+
     /**
-     * 
+     *
      * @param vehicleId
-     * @return 
+     * @return
      */
     public Park getParkByVehicleID(int vehicleId) {
         return parkDataHandler.getParkByVehicleID(vehicleId);
     }
-    
+
     /**
-     * 
+     *
      * @param idPointFrom
      * @param idPointTo
-     * @return 
+     * @return
      */
     public Path getPathByIdParks(int idPointFrom, int idPointTo) {
         return parkDataHandler.getPathByIdParks(idPointFrom, idPointTo);

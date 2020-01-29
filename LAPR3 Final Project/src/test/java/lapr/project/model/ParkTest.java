@@ -15,7 +15,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  *
- * @author G25
+ * @author Tiago Ribeiro
  */
 public class ParkTest {
 

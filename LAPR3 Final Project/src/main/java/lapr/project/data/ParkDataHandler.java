@@ -26,7 +26,7 @@ import oracle.jdbc.OracleTypes;
 
 /**
  *
- * @author TiagoRibeiro
+ * @author Tiago Ribeiro
  */
 public class ParkDataHandler {
 
@@ -43,10 +43,10 @@ public class ParkDataHandler {
     }
 
     /**
-     * 
+     *
      * @param element
      * @return
-     * @throws SQLException 
+     * @throws SQLException
      */
     public int addPark(Park element) throws SQLException {
         CallableStatement callStmt = null;
@@ -78,9 +78,9 @@ public class ParkDataHandler {
     }
 
     /**
-     * 
+     *
      * @param id
-     * @return 
+     * @return
      */
     public Park getById(int id) {
         String query = "SELECT * "
@@ -154,11 +154,11 @@ public class ParkDataHandler {
     }
 
     /**
-     * 
+     *
      * @param latitude
      * @param longitude
      * @param radius
-     * @return 
+     * @return
      */
     public List<Pair<Double, Park>> getNearestParks(double latitude, double longitude, double radius) {
 
@@ -322,10 +322,10 @@ public class ParkDataHandler {
     }
 
     /**
-     * 
+     *
      * @param parkId
      * @param userId
-     * @return 
+     * @return
      */
     public int checkParkFreeSpots(int parkId, int userId) {
         int spacesAvailable = 0;
@@ -366,11 +366,11 @@ public class ParkDataHandler {
     }
 
     /**
-     * 
+     *
      * @param parkId
      * @param userId
      * @return
-     * @throws SQLException 
+     * @throws SQLException
      */
     public boolean parkVehicle(int parkId, int userId) throws SQLException {
         CallableStatement callV = null;
@@ -427,9 +427,9 @@ public class ParkDataHandler {
     }
 
     /**
-     * 
+     *
      * @param idPoi
-     * @return 
+     * @return
      */
     public PointInterest getPoiById(int idPoi) {
         String query = "SELECT * FROM point_interest "
@@ -470,10 +470,10 @@ public class ParkDataHandler {
     }
 
     /**
-     * 
+     *
      * @param idPointFrom
      * @param idPointTo
-     * @return 
+     * @return
      */
     public Path getPathByIdParks(int idPointFrom, int idPointTo) {
         String query = "SELECT * FROM path_places "
@@ -544,10 +544,10 @@ public class ParkDataHandler {
     }
 
     /**
-     * 
+     *
      * @param latitude
      * @param longitude
-     * @return 
+     * @return
      */
     public Park getParkOfCoordinates(double latitude, double longitude) {
         String query = "SELECT  p.*, poi.poi_description, poi.latitude, poi.longitude, poi.elevation"
@@ -589,9 +589,9 @@ public class ParkDataHandler {
     }
 
     /**
-     * 
+     *
      * @param refPark
-     * @return 
+     * @return
      */
     public Park getParkOfReference(String refPark) {
         String query = "SELECT  p.*, poi.poi_description, poi.latitude, poi.longitude, poi.elevation"
@@ -635,9 +635,9 @@ public class ParkDataHandler {
     }
 
     /**
-     * 
+     *
      * @param idPark
-     * @return 
+     * @return
      */
     public LinkedList<Pair<Scooter, Double>> calculateTimeNeededToChargeTotalyByPark(int idPark) {
         VehicleDataHandler vehicleDataHandler = new VehicleDataHandler();
@@ -659,10 +659,10 @@ public class ParkDataHandler {
     }
 
     /**
-     * 
+     *
      * @param idPark
      * @param scooterDescription
-     * @return 
+     * @return
      */
     public Pair<Scooter, Double> calculateTimeNeededToChargeTotalyByScooter(int idPark, String scooterDescription) {
         VehicleDataHandler vehicleDataHandler = new VehicleDataHandler();
@@ -725,9 +725,9 @@ public class ParkDataHandler {
     }
 
     /**
-     * 
+     *
      * @param parkId
-     * @return 
+     * @return
      */
     public int getTotalNumberOfScooterSpots(int parkId) {
 
