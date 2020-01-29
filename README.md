@@ -35,7 +35,7 @@ Java source and test files are located in folder **src**.
 
 # Statement
 
-* [Statement (Enunciado)](Statement.pdf)
+* [Statement (Enunciado)](LAPR3FinalProject/Statement.pdf)
 
 # Software Engineering
 
