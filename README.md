@@ -1,18 +1,40 @@
 # ISEP-LAPR3-2019
+
+-----------------------------
+
+Ride Sharing Logo
+
+![LOGO1.png](LAPR3FinalProject/Images/LOGO1.png)
+
+-----------------------------
+Ride Sharing Twitter & App Store Templates Examples
+
+![APP_TWITTER_EXAMPLE.jpg](LAPR3FinalProject/Images/APP_TWITTER_EXAMPLE.jpg)
+
+-----------------------------
+
+After successfully parking the loaned vehicle, this is the e-mail the user receives.
+
+-----------------------------
+
+![EMAIL.jpg](LAPR3FinalProject/Images/EMAIL.png)
+
 -------------
+
+### Topics Below
+
 - Software Engineering
 - Report
 - References
 - Maven Files
 - Observations
-- Software Engineering
 
 #Java source files
 
 Java source and test files are located in folder src.
 
 
-# Ride Sharing Company (Software Engineering)
+# Software Engineering
 
 * [Use Cases](LAPR3FinalProject/Documents/UseCases.md)
 * [Analysis OO](LAPR3FinalProject/Documents/AnalysisOO.md)
@@ -49,6 +71,7 @@ For LAPR3, the goal of the ride-sharing system was to develop a software solutio
 To reach this goal, we were instructed to adopt a Test-Driven-Development during the project, use Java, and follow an agile Scrum Methodology aswell as Jira. We we're also required to apply the knowledge acquired in Applied Physcis, Information Structures and Database unit courses, in order to fully develop all of the requested functionalities.
 
 Jira was used to create issues and tasks, aswell as dividing them and planning each Sprint. Each user story was created and assigned to a team member, with focus on:
+
 * Analysis, where it was developed the Use Case Diagram and the System Sequence Diagram.
 * Design, where it was developed the Class Diagram, Sequence Diagram.
 * Implementation, where code and test code were implemented.
@@ -67,19 +90,6 @@ Taking all this into consideration we have implemented a ride sharing system tha
 After researching, we found some software systems similar to ours in Portugal, where Vieguini Rental Shop stands out. Vieguini, is Porto's first bike and scooter rental shop, and has also the best service, price and quality. They also give tips on where to go in the city and always recommend the best route according to the wishes of the user [1].
 
 Our software aims to provide an identical solution to the previous one, focusing more on its easy features to enable all types of users and consequently, to improve end-user experience and management processes.
-
-
-## Problems Statement
-
-Implementing a travel sharing system is not an easy task because of several aspects that need to be taken into consideration such as updating and managing a large amount of data in real time.
-
-The system has different implications or ways of handling, storing and updating data due to the different types of vehicles the system handles (scooters and bicycles).
-
-To get the final version of the domain and relational model took us some time because the first “Project Assignment” was not very explicit.
-
-It was difficult to understand at first, how the Parks and Points of Interest should be implemented with the utmost efficiency given that we would use graphs and it was crucial to have the best solution.
-
-Finally, it took a while to fully understand the concept of mocking objects, given that this was required for the Controller classes testing.
 
 
 ## Solution
