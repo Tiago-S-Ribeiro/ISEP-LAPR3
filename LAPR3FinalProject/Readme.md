@@ -1,5 +1,6 @@
 # ISEP-LAPR3-2019
 -------------
+- Software Engineering
 - Report
 - References
 - Maven Files
@@ -10,13 +11,18 @@
 
 Java source and test files are located in folder src.
 
+
+# Ride Sharing Company (Software Engineering)
+
+* [Use Cases](Documents/UseCases.md)
+* [Analysis OO](Documents/AnalysisOO.md)
+* [Design OO](Documents/DesignOO.md)
+
 # Report
 
 ## Abstract
 
-This report describes the development process of LAPR3's final project.
-
-The project's about the creation and implementation of a product that supports ride-sharing businesses. This service allows to manage users, bicycles, electric scooters, parks and the pickup and return process of those vehicles. In accordance with the problem presented to us we tried to suit both users and administrators needs.
+This project's about the creation and implementation of a product that supports ride-sharing businesses. This service allows to manage users, bicycles, electric scooters, parks and the pickup and return process of those vehicles. In accordance with the problem presented to us we tried to suit both users and administrators needs.
 
 Overall, we think we developed a good solution for this project.
 
@@ -279,8 +285,6 @@ You do not need to set a proxy.
 
 You can use existing dummy Oracle credentials available at http://bugmenot.com.
 
-#Ride Sharing Company
+-------------------------------
 
-* [Use Cases](Documents/UseCases.md)
-* [Analysis OO](Documents/AnalysisOO.md)
-* [Design OO](Documents/DesignOO.md)
+
