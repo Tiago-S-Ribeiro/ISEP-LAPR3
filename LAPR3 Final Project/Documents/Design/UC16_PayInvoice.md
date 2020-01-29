@@ -2,8 +2,8 @@
 
 ##	Sequence Diagram
 
-![SD_UC16.png](SD_UC16.png)
+![SD_UC16.png](SD_UC16.jpg)
 
 ##	Class Diagram
 
-![CD_UC16.png](CD_UC16.png)
+![CD_UC16.png](CD_UC16.jpg)

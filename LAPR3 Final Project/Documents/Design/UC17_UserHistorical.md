@@ -6,4 +6,4 @@
 
 ##	Class Diagram
 
-![CD_UC17.png](CD_UC17.png)
+N/A

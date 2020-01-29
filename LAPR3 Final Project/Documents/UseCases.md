@@ -23,6 +23,6 @@
 | UC17 | [User Historical](UseCases/UC17_UserHistorical.md)   |
 | UC18 | [Add Point of Interest](UseCases/UC18_AddPOI.md) |
 | UC20 | [Charging Status Of Each Vehicle](UseCases/UC20_ChargingStatusOfEachVehicle.md)|
-| UC21| [Check Vehicles Dont Have Enough Capacity To Perform Estimated Trip](UseCases/UC21_ CheckVehiclesDontHaveEnoughCapacityToPerformEstimatedTrip.md)|
+| UC21| [Check if Vehicle has Capacity To Perform Estimated Trip](UseCases/UC21_estimatedTrip.md)|
 | UC22 | [Check Vehicles unlocked](UseCases/UC22_CheckVehiclesUnlocked.md)  |
 | UC23 | [Add Path](UseCases/UC23_AddPath.md)  |
