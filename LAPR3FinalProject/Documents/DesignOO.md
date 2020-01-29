@@ -20,6 +20,6 @@
 | UC17 | [User Historical](Design/UC17_UserHistorical.md)   |
 | UC18 | [Add Point of Interest](Design/UC18_AddPOI.md) |
 | UC20 | [Charging Status Of Each Vehicle](Design/UC20_ChargingStatusOfEachVehicle.md)|
-| UC21| [Check Vehicles Dont Have Enough Capacity To Perform Estimated Trip](Design/UC21_CheckVehiclesDontHaveEnoughCapacityToPerformEstimatedTrip.md)|
+| UC21| [Check if Vehicle has Enough Capacity To Perform Estimated Trip](Design/UC21_estimatedTrip.md)|
 | UC22   | [Check Vehicles unlocked](Design/UC22_CheckVehiclesUnlocked.md)  |
 | UC23 | [Add Path](Design/UC23_AddPath.md) |
