@@ -29,10 +29,13 @@ After successfully parking the loaned vehicle, this is the e-mail the user recei
 - Maven Files
 - Observations
 
-#Java source files
+# Java source files
 
-Java source and test files are located in folder src.
+Java source and test files are located in folder **src**.
 
+# Statement
+
+* [Statement (Enunciado)](Statement.pdf)
 
 # Software Engineering
 
