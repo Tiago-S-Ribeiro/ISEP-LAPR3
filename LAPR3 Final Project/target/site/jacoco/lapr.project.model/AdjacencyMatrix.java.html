@@ -1,0 +1,224 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="pt"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>AdjacencyMatrix.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">ride-sharing</a> &gt; <a href="index.source.html" class="el_package">lapr.project.model</a> &gt; <span class="el_source">AdjacencyMatrix.java</span></div><h1>AdjacencyMatrix.java</h1><pre class="source lang-java linenums">/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package lapr.project.model;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Objects;
+
+/**
+ *
+ * @author Bernardo Carvalho
+ */
+public class AdjacencyMatrix {
+    
+    public static final int INITIAL_CAPACITY = 10;
+    public static final float RESIZE_FACTOR = 1.5F;
+    
+    int numVertices;
+    int numEdges;
+    ArrayList&lt;PointInterest&gt; vertices;
+    public Double[][] edgeMatrix;
+    
+    Double privateGet(int x, int y){
+<span class="fc" id="L27">	return edgeMatrix[x][y];</span>
+    }
+    
+    void privateSet(int x, int y, Double e){
+<span class="fc" id="L31">	edgeMatrix[x][y] = e;</span>
+<span class="fc" id="L32">    }</span>
+    
+    int toIndex(PointInterest vertex) {
+<span class="fc" id="L35">	return vertices.indexOf(vertex);</span>
+    }
+    
+    private void resizeMatrix() {
+<span class="pc bpc" id="L39" title="1 of 2 branches missed.">	if(edgeMatrix.length &lt; numVertices){</span>
+<span class="nc" id="L40">            int newSize = (int) (edgeMatrix.length * RESIZE_FACTOR);</span>
+
+            @SuppressWarnings(&quot;unchecked&quot;)
+<span class="nc" id="L43">            Double[][] temp = (Double[][]) new Object [newSize][newSize];</span>
+<span class="nc bnc" id="L44" title="All 2 branches missed.">            for (int i = 0; i &lt; edgeMatrix.length; i++)</span>
+<span class="nc" id="L45">                temp[i] = Arrays.copyOf(edgeMatrix[i], newSize);</span>
+	    
+<span class="nc" id="L47">            edgeMatrix = temp;</span>
+	}
+<span class="fc" id="L49">    }</span>
+
+    /**
+    * Constructs an empty graph.
+    */
+    public AdjacencyMatrix() {
+<span class="fc" id="L55">	this(INITIAL_CAPACITY);</span>
+<span class="fc" id="L56">    }</span>
+
+    /**
+    * Constructs a graph with an initial capacity.
+     * @param initialSize
+    */
+    @SuppressWarnings(&quot;unchecked&quot;)
+<span class="fc" id="L63">    public AdjacencyMatrix(int initialSize) {</span>
+<span class="fc" id="L64">	vertices = new ArrayList&lt;PointInterest&gt;(initialSize);</span>
+		
+<span class="fc" id="L66">	edgeMatrix = new Double[initialSize][initialSize];</span>
+<span class="fc" id="L67">    }</span>
+
+    /**
+    * Returns the number of vertices in the graph
+    * @return number of vertices of the graph
+    */
+    public int numVertices() {
+<span class="nc" id="L74">	return numVertices;</span>
+    }
+
+    /**
+    * Returns the number of edges in the graph
+    * @return number of edges of the graph
+    */
+    public int numEdges() {
+<span class="nc" id="L82">	return numEdges;</span>
+    }
+
+    /**
+    * Returns the actual vertices of the graph
+    * @return an iterable collection of vertices
+    */
+    @SuppressWarnings(&quot;unchecked&quot;)
+    public Iterable&lt;PointInterest&gt; vertices() {
+<span class="fc" id="L91">	return (Iterable&lt;PointInterest&gt;) vertices.clone();</span>
+    }
+
+    /**
+     * Returns the actual edges of the graph
+     * @return an iterable collection of all edges
+     */
+    public Iterable&lt;Double&gt; edges() {
+<span class="fc" id="L99">        ArrayList&lt;Double&gt; edges = new ArrayList&lt;Double&gt;();</span>
+
+        // graph is undirected, so only return a single copy of edge
+        // graph could actually only keep one copy of the edge but algorithms
+        // would then need to consider that case.
+
+<span class="pc bpc" id="L105" title="1 of 2 branches missed.">        for (int i = 0; i &lt; numVertices - 1; i++)</span>
+<span class="nc bnc" id="L106" title="All 2 branches missed.">            for (int j = i + 1; j &lt; numVertices; j++)</span>
+<span class="nc bnc" id="L107" title="All 2 branches missed.">                if (edgeMatrix[i][j] != null)</span>
+<span class="nc" id="L108">                        edges.add(edgeMatrix[i][j]);</span>
+
+<span class="fc" id="L110">        return edges;</span>
+    }
+
+    /**
+     * Returns the edge between two vertices
+     * @param vertexA
+     * @param vertexB  
+     * @return the edge or null if source and dest are not adjacent or do not
+     *         exist in the graph.
+     */
+    public Double getEdge(PointInterest vertexA, PointInterest vertexB) {
+<span class="fc" id="L121">        int indexA = toIndex(vertexA);</span>
+<span class="fc bfc" id="L122" title="All 2 branches covered.">        if (indexA == -1)</span>
+<span class="fc" id="L123">                return null;</span>
+
+<span class="fc" id="L125">        int indexB = toIndex(vertexB);</span>
+<span class="pc bpc" id="L126" title="1 of 2 branches missed.">        if (indexB == -1)</span>
+<span class="nc" id="L127">                return null;</span>
+
+<span class="fc" id="L129">        return edgeMatrix[indexA][indexB];</span>
+    }
+
+    /**
+     * Inserts a new vertex with the given element.
+     * fails if vertex already exists
+     * @param newVertex (vertex contents)
+     * @return false if vertex exists in the graph
+     */
+    public boolean insertVertex(PointInterest newVertex) {
+<span class="fc" id="L139">        int index = toIndex(newVertex);</span>
+<span class="pc bpc" id="L140" title="1 of 2 branches missed.">        if (index != -1)</span>
+<span class="nc" id="L141">            return false;</span>
+
+<span class="fc" id="L143">        vertices.add(newVertex);</span>
+<span class="fc" id="L144">        numVertices++;</span>
+<span class="fc" id="L145">        resizeMatrix();</span>
+<span class="fc" id="L146">        return true;</span>
+    }
+
+    /**
+     * Inserts a new edge between two vertices. 
+     * Package level method is for use of algorithms class 
+     * @param indexA 
+     * @param indexB 
+     * @param newEdge  
+     * @return false if vertices are not in the graph or are the same vertex 
+     *         or an edge already exists between the two.
+     */
+    void insertEdge(int indexA, int indexB, Double newEdge){
+<span class="pc bpc" id="L159" title="1 of 2 branches missed.">        if (edgeMatrix[indexA][indexB] == null){</span>
+<span class="fc" id="L160">           edgeMatrix[indexA][indexB] = edgeMatrix[indexB][indexA] = newEdge; // undirected graph</span>
+<span class="fc" id="L161">           numEdges++;</span>
+        }
+<span class="fc" id="L163">    }</span>
+	
+    public boolean insertEdge(PointInterest vertexA, PointInterest vertexB, Double newEdge) {
+
+<span class="fc bfc" id="L167" title="All 2 branches covered.">        if (vertexA.equals(vertexB))</span>
+<span class="fc" id="L168">            return false;</span>
+
+<span class="fc" id="L170">        int indexA = toIndex(vertexA);</span>
+<span class="pc bpc" id="L171" title="1 of 2 branches missed.">        if (indexA == -1)</span>
+<span class="nc" id="L172">            return false;</span>
+
+<span class="fc" id="L174">        int indexB = toIndex(vertexB);</span>
+<span class="fc bfc" id="L175" title="All 2 branches covered.">        if (indexB == -1)</span>
+<span class="fc" id="L176">            return false;</span>
+
+<span class="fc bfc" id="L178" title="All 2 branches covered.">        if (edgeMatrix[indexA][indexB] != null)</span>
+<span class="fc" id="L179">            return false;</span>
+
+<span class="fc" id="L181">        insertEdge(indexA, indexB, newEdge);</span>
+
+<span class="fc" id="L183">        return true;</span>
+    }
+
+    @Override
+    public int hashCode() {
+<span class="fc" id="L188">        int hash = 3;</span>
+<span class="fc" id="L189">        hash = 53 * hash + this.numVertices;</span>
+<span class="fc" id="L190">        hash = 53 * hash + this.numEdges;</span>
+<span class="fc" id="L191">        hash = 53 * hash + Objects.hashCode(this.vertices);</span>
+<span class="fc" id="L192">        hash = 53 * hash + Arrays.deepHashCode(this.edgeMatrix);</span>
+<span class="fc" id="L193">        return hash;</span>
+    }
+
+    /**
+     * Implementation of equals
+     * @param oth
+     * @return true if both objects represent the same graph
+     */
+    @Override
+    public boolean equals(Object oth) {
+
+<span class="fc bfc" id="L204" title="All 2 branches covered.">        if(oth == null) return false;</span>
+
+<span class="fc bfc" id="L206" title="All 2 branches covered.">        if(this == oth) return true;</span>
+
+<span class="pc bpc" id="L208" title="1 of 2 branches missed.">        if (!(oth instanceof AdjacencyMatrix))</span>
+<span class="nc" id="L209">                return false;</span>
+
+<span class="fc" id="L211">        AdjacencyMatrix other = (AdjacencyMatrix) oth;</span>
+
+<span class="fc bfc" id="L213" title="All 4 branches covered.">        if(numVertices != other.numVertices || numEdges != other.numEdges) return false;</span>
+
+<span class="fc bfc" id="L215" title="All 2 branches covered.">        if(!vertices.equals(other.vertices)) return false;</span>
+
+<span class="pc bpc" id="L217" title="1 of 2 branches missed.">        if(!Arrays.deepEquals(edgeMatrix,other.edgeMatrix))</span>
+<span class="nc" id="L218">                                return false;</span>
+
+<span class="fc" id="L220">        return true;</span>
+    }
+    
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

@@ -1,0 +1,218 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="pt"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>UserUI.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">ride-sharing</a> &gt; <a href="index.source.html" class="el_package">lapr.project.ui</a> &gt; <span class="el_source">UserUI.java</span></div><h1>UserUI.java</h1><pre class="source lang-java linenums">/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package lapr.project.ui;
+
+import static java.lang.System.exit;
+import java.sql.SQLException;
+import java.util.List;
+import java.util.Scanner;
+import javafx.util.Pair;
+import lapr.project.controller.ParkController;
+import lapr.project.controller.RentalController;
+import lapr.project.controller.UserController;
+import lapr.project.controller.VehicleController;
+import lapr.project.data.ParkDataHandler;
+import lapr.project.data.RentalDataHandler;
+import lapr.project.data.UserDataHandler;
+import lapr.project.data.UserSession;
+import lapr.project.data.VehicleDataHandler;
+import lapr.project.model.Park;
+import lapr.project.model.Rental;
+import lapr.project.model.Vehicle;
+import static lapr.project.ui.LoginUI.isNumeric;
+
+/**
+ *
+ * @author TiagoRibeiro
+ */
+public class UserUI {
+    
+    /**
+     * Scanner
+     */
+<span class="nc" id="L36">    public static final Scanner INPUT = new Scanner(System.in);</span>
+    /**
+     * SonarQube suggestion because '\nThere are' partial string is presented more than 2 times in different situations
+     */
+    public static final String THERE_ARE = &quot;\nThere are &quot;;
+    /**
+     * SonarQube suggestion because 'available at' partial string is presented more than 2 times in different situations
+     */
+    public static final String AVAILABLE_AT = &quot; available at &quot;;
+    /**
+     * SonarQube suggestion because this string is presented more than 2 times in different situations
+     */
+    public static final String PARK_TO_CHECK_MSG = &quot;\nWhat is the park reference of the park you wish to check?&quot;;
+
+<span class="nc" id="L50">    public UserUI() {</span>
+        //Dummy constructor to be called and have acess to the instance methods of UserUI
+<span class="nc" id="L52">    }</span>
+
+    public static void showUserScreen() {
+<span class="nc" id="L55">        System.out.println(&quot;\nRIDE SHARING\n------------&quot;</span>
+                + &quot;\n 1 - Rent vehicle&quot;
+                + &quot;\n 2 - Find parks near me&quot;
+                + &quot;\n 3 - Check rentals history&quot;
+                + &quot;\n 4 - Park vehicle&quot;
+                + &quot;\n 5 - Pay monthly invoice&quot;
+                + &quot;\n 6 - Check Spots in a Park for my loaned vehicle&quot;
+                + &quot;\n 7 - Check Spots in a Park for Scooters&quot;
+                + &quot;\n 8 - Check Spots in a Park for Bicycles&quot;
+                + &quot;\n 0 - Exit&quot;
+                + &quot;\n Choose one of the options above.&quot;);
+<span class="nc" id="L66">    }</span>
+
+    public void loop() throws ClassNotFoundException, SQLException {
+        String opt;
+        do {
+<span class="nc" id="L71">            showUserScreen();</span>
+<span class="nc" id="L72">            opt = INPUT.nextLine();</span>
+
+<span class="nc bnc" id="L74" title="All 10 branches missed.">            switch (opt) {</span>
+                case &quot;1&quot;:
+<span class="nc" id="L76">                    makeRental();</span>
+<span class="nc" id="L77">                    break;</span>
+                case &quot;2&quot;:
+<span class="nc" id="L79">                    getNearestParks();</span>
+<span class="nc" id="L80">                    break;</span>
+                case &quot;3&quot;:
+<span class="nc" id="L82">                    getUserHistorical();</span>
+<span class="nc" id="L83">                    break;</span>
+                case &quot;4&quot;:
+<span class="nc" id="L85">                    parkVehicleAtAGivenPark();</span>
+<span class="nc" id="L86">                    break;</span>
+                case &quot;5&quot;:
+<span class="nc" id="L88">                    System.out.println(&quot;Not available at the moment.&quot;);</span>
+<span class="nc" id="L89">                    break;</span>
+                case &quot;6&quot;:
+<span class="nc" id="L91">                    checkParkFeeSpotsForMyLoanedVehicle();</span>
+<span class="nc" id="L92">                    break;</span>
+                case &quot;7&quot;:
+<span class="nc" id="L94">                    checkParkFreeScooterSpots();</span>
+<span class="nc" id="L95">                    break;</span>
+                case &quot;8&quot;:
+<span class="nc" id="L97">                    checkParkFreeBicycleSpots();</span>
+<span class="nc" id="L98">                    break;</span>
+                case &quot;0&quot;:
+<span class="nc" id="L100">                    exit(0);</span>
+<span class="nc" id="L101">                    break;</span>
+                default:
+<span class="nc" id="L103">                    System.out.println(&quot;Invalid option&quot;);</span>
+            }
+<span class="nc bnc" id="L105" title="All 4 branches missed.">        } while (!opt.equals(&quot;0&quot;) || isNumeric(opt));</span>
+<span class="nc" id="L106">    }</span>
+
+    public void getUserHistorical() throws ClassNotFoundException, SQLException {
+<span class="nc" id="L109">        UserController uc = new UserController(new UserDataHandler());</span>
+<span class="nc" id="L110">        List&lt;Rental&gt; historical = uc.getUserHistorical(UserSession.getInstance().getUser().getIdUser());</span>
+<span class="nc bnc" id="L111" title="All 2 branches missed.">        if (!historical.isEmpty()) {</span>
+<span class="nc bnc" id="L112" title="All 2 branches missed.">            for (Rental str : historical) {</span>
+<span class="nc" id="L113">                System.out.println(str);</span>
+<span class="nc" id="L114">            }</span>
+        } else {
+<span class="nc" id="L116">            System.out.println(&quot;Empty historical. Rent a vehicle to fill it!&quot;);</span>
+        }
+        
+<span class="nc" id="L119">        System.out.println(&quot;OK to exit&quot;);</span>
+<span class="nc" id="L120">        String exit = INPUT.nextLine();</span>
+<span class="nc bnc" id="L121" title="All 2 branches missed.">        if (exit.equalsIgnoreCase(&quot;OK&quot;)) {</span>
+<span class="nc" id="L122">            loop();</span>
+        }
+<span class="nc" id="L124">    }</span>
+    
+    public void getNearestParks() throws ClassNotFoundException, SQLException {
+<span class="nc" id="L127">        ParkController pc = new ParkController(new ParkDataHandler());</span>
+        
+<span class="nc" id="L129">        System.out.println(&quot;\nInsert your current latitude coordinate:&quot;);</span>
+<span class="nc" id="L130">        double latitude = INPUT.nextDouble();</span>
+        
+<span class="nc" id="L132">        System.out.println(&quot;\nInsert your current longitude coordinate:&quot;);</span>
+<span class="nc" id="L133">        double longitude = INPUT.nextDouble();</span>
+        
+<span class="nc" id="L135">        System.out.println(&quot;What is the radious you wish to search? (In kilometers)&quot;);</span>
+<span class="nc" id="L136">        double radius = INPUT.nextDouble();</span>
+        
+<span class="nc bnc" id="L138" title="All 2 branches missed.">        if(radius &lt; 1){</span>
+<span class="nc" id="L139">            radius = 1;</span>
+        }
+        
+<span class="nc" id="L142">        List&lt;Pair&lt;Double, Park&gt;&gt; listOfParks = pc.getNearestParks(latitude, longitude, radius);</span>
+        
+<span class="nc bnc" id="L144" title="All 2 branches missed.">        for(Pair&lt;Double, Park&gt; p : listOfParks){</span>
+<span class="nc" id="L145">            System.out.println(&quot;Park Reference: &quot; + p.getValue().getRefPark() + &quot;\n&quot;);</span>
+<span class="nc" id="L146">        }</span>
+<span class="nc" id="L147">    }</span>
+    
+    public void checkParkFreeBicycleSpots(){
+<span class="nc" id="L150">        ParkController pc = new ParkController(new ParkDataHandler());</span>
+        
+<span class="nc" id="L152">        System.out.println(PARK_TO_CHECK_MSG);</span>
+<span class="nc" id="L153">        String parkRef = INPUT.nextLine();</span>
+        
+<span class="nc" id="L155">        int spots = pc.checkParkFreeBicycleSpots(pc.getParkByRefPark(parkRef).getId());</span>
+        
+<span class="nc" id="L157">        System.out.println(THERE_ARE + spots + AVAILABLE_AT + parkRef + &quot; for bicycles.&quot;);</span>
+<span class="nc" id="L158">    }</span>
+    
+    public void checkParkFreeScooterSpots(){
+<span class="nc" id="L161">        ParkController pc = new ParkController(new ParkDataHandler());</span>
+        
+<span class="nc" id="L163">        System.out.println(PARK_TO_CHECK_MSG);</span>
+<span class="nc" id="L164">        String reference = INPUT.nextLine();</span>
+        
+<span class="nc" id="L166">        int spots = pc.checkParkFreeScooterSpots(pc.getParkByRefPark(reference).getId());</span>
+        
+<span class="nc" id="L168">        System.out.println(THERE_ARE + spots + AVAILABLE_AT + reference + &quot; for scooters.&quot;);</span>
+<span class="nc" id="L169">    }</span>
+    
+    public void parkVehicleAtAGivenPark() throws SQLException{
+<span class="nc" id="L172">        ParkController pc = new ParkController(new ParkDataHandler());</span>
+        
+<span class="nc" id="L174">        System.out.println(&quot;What is your reference of the park where you'll park the vehicle?&quot;);</span>
+<span class="nc" id="L175">        String parkRef = INPUT.nextLine();</span>
+        
+<span class="nc" id="L177">        int parkId = pc.getParkByRefPark(parkRef).getIdPoint();</span>
+<span class="nc" id="L178">        int userId = UserSession.getInstance().getUser().getIdUser();</span>
+        
+<span class="nc" id="L180">        boolean success = pc.parkVehicle(parkId, userId);</span>
+<span class="nc bnc" id="L181" title="All 2 branches missed.">        if(success){</span>
+<span class="nc" id="L182">            System.out.println(&quot;Please confirm you're e-mail for confirmation of successful lock. Thank you!&quot;);</span>
+        }else{
+<span class="nc" id="L184">            System.out.println(&quot;It occured an error.&quot;);</span>
+        }
+<span class="nc" id="L186">    }</span>
+
+    public void checkParkFeeSpotsForMyLoanedVehicle(){
+<span class="nc" id="L189">        ParkController pc = new ParkController(new ParkDataHandler());</span>
+        
+<span class="nc" id="L191">        System.out.println(PARK_TO_CHECK_MSG);</span>
+<span class="nc" id="L192">        String reference = INPUT.nextLine();</span>
+        
+<span class="nc" id="L194">        int parkId = pc.getParkByRefPark(reference).getId();</span>
+<span class="nc" id="L195">        int spots = pc.checkParkFreeScooterSpots(parkId);</span>
+        
+<span class="nc" id="L197">        pc.checkParkFreeSpots(parkId, UserSession.getInstance().getUser().getIdUser());</span>
+        
+<span class="nc" id="L199">        System.out.println(THERE_ARE + spots + AVAILABLE_AT + reference + &quot; for your loaned vehicle.&quot;);</span>
+<span class="nc" id="L200">    }</span>
+    
+    public void makeRental() throws SQLException{
+<span class="nc" id="L203">        RentalController rc = new RentalController(new RentalDataHandler());</span>
+<span class="nc" id="L204">        ParkController pc = new ParkController(new ParkDataHandler());</span>
+<span class="nc" id="L205">        VehicleController vc = new VehicleController(new VehicleDataHandler());</span>
+        
+<span class="nc" id="L207">        System.out.println(&quot;Insert park ID from where the rental will take place: &quot;);</span>
+<span class="nc" id="L208">        int idPark = INPUT.nextInt();</span>
+<span class="nc" id="L209">        System.out.println(&quot;Insert an available vehicle ID: &quot;);</span>
+<span class="nc" id="L210">        int idVehicle = INPUT.nextInt();</span>
+           
+<span class="nc" id="L212">        Park p = pc.getPark(idPark);</span>
+<span class="nc" id="L213">        Vehicle vehicle = vc.getById(idVehicle);</span>
+        
+<span class="nc" id="L215">        rc.makeRental(UserSession.getInstance().getUser(), vehicle, p);</span>
+<span class="nc" id="L216">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

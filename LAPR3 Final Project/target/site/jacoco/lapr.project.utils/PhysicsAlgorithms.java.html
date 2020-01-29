@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="pt"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>PhysicsAlgorithms.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">ride-sharing</a> &gt; <a href="index.source.html" class="el_package">lapr.project.utils</a> &gt; <span class="el_source">PhysicsAlgorithms.java</span></div><h1>PhysicsAlgorithms.java</h1><pre class="source lang-java linenums">/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package lapr.project.utils;
+
+/**
+ *
+ * @author jujps00
+ */
+<span class="fc" id="L12">public class PhysicsAlgorithms {</span>
+
+    private static final double CONSTANT_GRAVITY = 9.80665;
+    private static final double AIR_DENSITY = 1.225; //to a temperature of 15 degrees
+    private static final double EFFICIENCY_SCOOTERS = 0.7;//70% 
+    public static final int EARTH_RADIUS = 6371;// Radius of the earth 
+    public static final double EFFICENCY_CHARGE = 0.90;//90% 
+    public static final int SCOOTER_AVERAGE_SPEED =6;//m/s
+
+    public double calculateCalories(double bikeWeight, double userWeight, double kineticCoefficient, double frontalArea, float cyclingAverageSpeed, double aerodynamicCoefficient, float windSpeed, float windDirection, double elevationInicial, double elevationFinal, double latitudeRad, double latitude2Rad, double longitudeRad, double longitude2Rad) {
+<span class="fc" id="L22">        double totalForce = calculateTotalForce(bikeWeight, userWeight, elevationInicial, elevationFinal, kineticCoefficient, frontalArea, cyclingAverageSpeed, aerodynamicCoefficient, windSpeed, windDirection, latitudeRad, latitude2Rad, longitudeRad, longitude2Rad);</span>
+<span class="fc" id="L23">        double newCyclingAverageSpeed = calculateAverageSpeedWithWindDirection(cyclingAverageSpeed, windSpeed, windDirection);</span>
+<span class="fc" id="L24">        double distance = calculateDistanceWithElevation(latitudeRad, latitude2Rad, longitudeRad, longitude2Rad, elevationInicial, elevationFinal);//km</span>
+<span class="fc" id="L25">        double time =(distance/(newCyclingAverageSpeed));// s</span>
+<span class="fc" id="L26">        double calories = ((totalForce * newCyclingAverageSpeed)*time)/4.18 ;//1cal = 4.18J</span>
+<span class="pc bpc" id="L27" title="1 of 2 branches missed.">        if (calories &lt;= 0) {</span>
+<span class="nc" id="L28">            return 0;</span>
+        }
+<span class="fc" id="L30">        return calories;</span>
+    }
+
+    public double calculateTotalForce(double bikeWeight, double userWeight, double elevationInicial, double elevationFinal, double kineticCoefficient, double frontalArea, float cyclingAverageSpeed, double aerodynamicCoefficient, float windSpeed, float windDirection, double latitudeRad, double latitude2Rad, double longitudeRad, double longitude2Rad) {
+<span class="fc" id="L34">        double gravitationalForce = calculateGravitationalForce(bikeWeight, userWeight, elevationInicial, elevationFinal, latitudeRad, latitude2Rad, longitudeRad, longitude2Rad);</span>
+<span class="fc" id="L35">        double frictionalForce = calculateFrictionalForce(bikeWeight, userWeight, kineticCoefficient, elevationInicial, elevationFinal, latitudeRad, latitude2Rad, longitudeRad, longitude2Rad);</span>
+<span class="fc" id="L36">        double windForce = calculateWindeForce(frontalArea, cyclingAverageSpeed, aerodynamicCoefficient, windSpeed);</span>
+<span class="fc" id="L37">        return gravitationalForce + frictionalForce + windForce;</span>
+    }
+
+    public double calculateGravitationalForce(double bikeWeight, double userWeight, double elevationInicial, double elevationFinal, double latitudeRad, double latitude2Rad, double longitudeRad, double longitude2Rad) {
+<span class="fc" id="L41">        double totalWeight = bikeWeight + userWeight;</span>
+<span class="fc" id="L42">        double pathInclination = calculatePathInclination(elevationInicial, elevationFinal, latitudeRad, latitude2Rad, longitudeRad, longitude2Rad);</span>
+<span class="fc" id="L43">        return totalWeight * CONSTANT_GRAVITY * pathInclination;</span>
+    }
+
+    public double calculatePathInclination(double elevationInicial, double elevationFinal, double latitudeRad, double latitude2Rad, double longitudeRad, double longitude2Rad) {
+<span class="fc" id="L47">        double distance = linearDistanceTo(latitudeRad, latitude2Rad, longitudeRad, longitude2Rad);</span>
+<span class="fc" id="L48">        return (elevationFinal - elevationInicial) / distance;</span>
+    }
+
+    public double calculateFrictionalForce(double bikeWeight, double userWeight, double kineticCoefficient, double elevationInicial, double elevationFinal, double latitudeRad, double latitude2Rad, double longitudeRad, double longitude2Rad) {
+<span class="fc" id="L52">        double totalWeight = bikeWeight + userWeight;</span>
+<span class="fc" id="L53">        double pathInclination = calculatePathInclination(elevationInicial, elevationFinal, latitudeRad, latitude2Rad, longitudeRad, longitude2Rad);</span>
+<span class="fc" id="L54">        return totalWeight * CONSTANT_GRAVITY * Math.sqrt(1 - Math.pow(pathInclination, 2)) * kineticCoefficient;</span>
+    }
+
+    public double calculateWindeForce(double frontalArea, float cyclingAverageSpeed, double aerodynamicCoefficient, float windSpeed) {
+<span class="fc" id="L58">        return 0.5 * AIR_DENSITY * frontalArea * aerodynamicCoefficient * Math.pow((cyclingAverageSpeed - windSpeed), 2);</span>
+    }
+
+    public double calculateAverageSpeedWithWindDirection(float cyclingAverageSpeed, float windSpeed, float windDirection) {
+<span class="fc bfc" id="L62" title="All 2 branches covered.">        if (windDirection == 90) {</span>
+<span class="fc" id="L63">            return cyclingAverageSpeed - (windSpeed * Math.cos(0));</span>
+<span class="fc bfc" id="L64" title="All 4 branches covered.">        } else if (windDirection &gt; 0 &amp;&amp; windDirection &lt; 180) {</span>
+<span class="fc" id="L65">            double windDirectionRad = Math.toRadians(windDirection);</span>
+<span class="fc" id="L66">            return cyclingAverageSpeed - (windSpeed * Math.abs(Math.cos(windDirectionRad)));</span>
+        } else {
+<span class="fc" id="L68">            return cyclingAverageSpeed;</span>
+        }
+    }
+
+    /**
+     * Calculate calculateDistanceWithElevation between two points in latitude
+     * and longitude taking into account height difference. If you are not
+     * interested in height difference pass 0.0. Uses Haversine method as its
+     * base.
+     *
+     * lat1, lon1 Start point lat2, lon2 End point el1 Start altitude in meters
+     * el2 End altitude in meters
+     *
+     * @returns Distance in Meters
+     */
+    public static double calculateDistanceWithElevation(double lat1, double lat2, double lon1,
+            double lon2, double el1, double el2) {
+
+<span class="fc" id="L86">        double latDistance = Math.toRadians(lat2 - lat1);</span>
+<span class="fc" id="L87">        double lonDistance = Math.toRadians(lon2 - lon1);</span>
+<span class="fc" id="L88">        double a = Math.sin(latDistance / 2) * Math.sin(latDistance / 2)</span>
+<span class="fc" id="L89">                + Math.cos(Math.toRadians(lat1)) * Math.cos(Math.toRadians(lat2))</span>
+<span class="fc" id="L90">                * Math.sin(lonDistance / 2) * Math.sin(lonDistance / 2);</span>
+<span class="fc" id="L91">        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));</span>
+<span class="fc" id="L92">        double distance = EARTH_RADIUS * c * 1000; // convert to meters</span>
+
+<span class="fc" id="L94">        double height = el1 - el2;</span>
+
+<span class="fc" id="L96">        distance = Math.pow(distance, 2) + Math.pow(height, 2);</span>
+
+<span class="fc" id="L98">        return Math.sqrt(distance);</span>
+    }
+
+    /**
+     * Get the linear calculateDistanceWithElevation from one location to
+     * another.
+     *
+     * @param lat1 Origin latitude in Decimal Degrees.
+     * @param lat2 Origin longitude in Decimal Degrees.
+     * @param long1 Destiny latitude in Decimal Degrees.
+     * @param long2 Destiny longitude in Decimal Degrees.
+     * @return Returns the calculateDistanceWithElevation in meters from one
+     * location to another.
+     */
+    public double linearDistanceTo(double lat1, double lat2, double long1, double long2) {
+<span class="fc" id="L113">        return calculateDistanceWithElevation(lat1, lat2, long1, long2, 0, 0); //m</span>
+    }
+
+    private double deg2rad(double deg) {
+<span class="nc" id="L117">        return (deg * Math.PI / 180.0);</span>
+    }
+
+    public double calculateDistanceAScooterCanDo(int motor, double scooterActualBatteryCapacity, int scooterMaxBatteryCapacity) {
+<span class="fc" id="L121">        scooterMaxBatteryCapacity = scooterMaxBatteryCapacity * 1000* 3600;</span>
+<span class="fc" id="L122">        double time = (((scooterActualBatteryCapacity * scooterMaxBatteryCapacity) / 100) / motor) ; //s</span>
+<span class="fc" id="L123">        return (time * SCOOTER_AVERAGE_SPEED * EFFICIENCY_SCOOTERS);//m</span>
+
+    }
+
+    /**
+     * Calculate the amount of electrical energy required to travel from one
+     * location to another.
+     */
+    public double calculateEnergySpentBetweenPoints(double scooterWeight, double userWeight, double kineticCoefficient, double frontalArea, double aerodynamicCoefficient, float windSpeed, float windDirection, double elevationInicial, double elevationFinal, double latitudeRad, double latitude2Rad, double longitudeRad, double longitude2Rad) {
+<span class="fc" id="L132">        double totalForce = calculateTotalForce(scooterWeight, userWeight, elevationInicial, elevationFinal, kineticCoefficient, frontalArea, SCOOTER_AVERAGE_SPEED, aerodynamicCoefficient, windSpeed, windDirection, latitudeRad, latitude2Rad, longitudeRad, longitude2Rad);</span>
+<span class="fc" id="L133">        double newAverageSpeed = calculateAverageSpeedWithWindDirection(SCOOTER_AVERAGE_SPEED, windSpeed, windDirection);</span>
+<span class="fc" id="L134">        double distance = calculateDistanceWithElevation(latitudeRad, latitude2Rad, longitudeRad, longitude2Rad, elevationInicial, elevationFinal);</span>
+<span class="fc" id="L135">        double time = ((distance)/(newAverageSpeed));//s</span>
+<span class="fc" id="L136">        return (((totalForce * newAverageSpeed) * time));</span>
+
+    }
+
+    public double calculateEnergyforGivenTrip(double scooterWeight, double userWeight, double kineticCoefficient, double frontalArea,double aerodynamicCoefficient, float windSpeed, float windDirection, double elevationInicial, double elevationFinal, double latitudeRad, double latitude2Rad, double longitudeRad, double longitude2Rad) {
+<span class="fc" id="L141">        double calculateEnergySpentBetweenPoints = calculateEnergySpentBetweenPoints(scooterWeight, userWeight, kineticCoefficient, frontalArea,aerodynamicCoefficient, windSpeed, windDirection, elevationInicial, elevationFinal, latitudeRad, latitude2Rad, longitudeRad, longitude2Rad);</span>
+<span class="fc" id="L142">        return (calculateEnergySpentBetweenPoints * 0.1) + calculateEnergySpentBetweenPoints;//J</span>
+    }
+
+    public double calculateTimeNeededToChargeTotaly(double parkVoltage, double parkCurrent, double scooterActualBatteryCapacity, int scooterMaxBatteryCapacity, int numberOfPoints) {
+<span class="fc" id="L146">        scooterMaxBatteryCapacity = scooterMaxBatteryCapacity * 1000;</span>
+<span class="fc" id="L147">        double parkPower = parkCurrent * parkVoltage; //w</span>
+<span class="fc" id="L148">        double pointPower = (parkPower / numberOfPoints);//W</span>
+<span class="fc bfc" id="L149" title="All 2 branches covered.">        if (pointPower &gt; 3000) {</span>
+<span class="fc" id="L150">            pointPower = 3000;</span>
+        }
+<span class="fc bfc" id="L152" title="All 2 branches covered.">        if (pointPower &lt;= 0) {</span>
+<span class="fc" id="L153">            return 0;</span>
+        }
+<span class="fc" id="L155">        return ((scooterMaxBatteryCapacity - ((scooterActualBatteryCapacity * scooterMaxBatteryCapacity) / 100)) / (pointPower * EFFICENCY_CHARGE)) * 3600;//s</span>
+    }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

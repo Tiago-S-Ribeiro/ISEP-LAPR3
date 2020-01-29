@@ -1,0 +1,423 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="pt"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Graph.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">ride-sharing</a> &gt; <a href="index.source.html" class="el_package">lapr.project.model</a> &gt; <span class="el_source">Graph.java</span></div><h1>Graph.java</h1><pre class="source lang-java linenums">/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package lapr.project.model;
+
+import java.lang.reflect.Array;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Objects;
+
+/**
+ *
+ * @author G25
+ * @param &lt;V&gt;
+ * @param &lt;E&gt;
+ */
+public class Graph&lt;V, E&gt; implements GraphInterface&lt;V, E&gt; {
+
+    private int numVert;
+    private int numEdge;
+    private boolean isDirected;
+    private Map&lt;V, Vertex&lt;V, E&gt;&gt; vertices;  //all Vertices of the graph 
+
+    /**
+     * constrói um grafo vazio (direcionado ou nao-direcionado)
+     *
+     * @param directed (false se nao for direcionado, true se for)
+     */
+<span class="fc" id="L32">    public Graph(boolean directed) {</span>
+<span class="fc" id="L33">        numVert = 0;</span>
+<span class="fc" id="L34">        numEdge = 0;</span>
+<span class="fc" id="L35">        isDirected = directed;</span>
+<span class="fc" id="L36">        vertices = new LinkedHashMap&lt;&gt;();</span>
+<span class="fc" id="L37">    }</span>
+
+    @Override
+    public int numVertices() {
+<span class="fc" id="L41">        return numVert;</span>
+    }
+
+    @Override
+    public Iterable&lt;V&gt; vertices() {
+<span class="fc" id="L46">        return vertices.keySet();</span>
+    }
+
+    public boolean validVertex(V vert) {
+
+<span class="fc bfc" id="L51" title="All 2 branches covered.">        return vertices.get(vert) != null;</span>
+    }
+
+    public int getKey(V vert) {
+<span class="fc" id="L55">        return vertices.get(vert).getKey();</span>
+    }
+
+    public Map&lt;V, Vertex&lt;V, E&gt;&gt; getMap() {
+<span class="fc" id="L59">        return vertices;</span>
+    }
+
+    public V[] allkeyVerts() throws NullPointerException {
+
+<span class="fc" id="L64">        V vertElem = null;</span>
+<span class="fc bfc" id="L65" title="All 2 branches covered.">        for (Vertex&lt;V, E&gt; vert : vertices.values()) {</span>
+<span class="fc" id="L66">            vertElem = vert.getElement();            // To get type</span>
+<span class="fc" id="L67">        }</span>
+<span class="fc" id="L68">        V[] keyverts = (V[]) Array.newInstance(vertElem.getClass(), numVert);</span>
+
+<span class="fc bfc" id="L70" title="All 2 branches covered.">        for (Vertex&lt;V, E&gt; vert : vertices.values()) {</span>
+<span class="fc" id="L71">            keyverts[vert.getKey()] = vert.getElement();</span>
+<span class="fc" id="L72">        }</span>
+
+<span class="fc" id="L74">        return keyverts;</span>
+    }
+
+    public Iterable&lt;V&gt; adjVertices(V vert) {
+
+<span class="pc bpc" id="L79" title="1 of 2 branches missed.">        if (!validVertex(vert)) {</span>
+<span class="fc" id="L80">            return null;</span>
+        }
+
+<span class="nc" id="L83">        Vertex&lt;V, E&gt; vertex = vertices.get(vert);</span>
+
+<span class="nc" id="L85">        return vertex.getAllAdjVerts();</span>
+    }
+
+    @Override
+    public int numEdges() {
+<span class="fc" id="L90">        return numEdge;</span>
+    }
+
+    public boolean isDirected() {
+<span class="fc" id="L94">        return isDirected;</span>
+    }
+
+    public void setDirected(boolean orientation) {
+<span class="fc" id="L98">        this.isDirected = orientation;</span>
+<span class="fc" id="L99">    }</span>
+
+    @Override
+    public Iterable&lt;Edge&lt;V, E&gt;&gt; edges() {
+
+<span class="fc" id="L104">        ArrayList&lt;Edge&lt;V, E&gt;&gt; edges = new ArrayList&lt;&gt;();</span>
+
+<span class="fc bfc" id="L106" title="All 2 branches covered.">        for (Map.Entry&lt;V, Vertex&lt;V, E&gt;&gt; entry : vertices.entrySet()) {</span>
+<span class="fc" id="L107">            Iterable&lt;Edge&lt;V, E&gt;&gt; eas = entry.getValue().getAllOutEdges();</span>
+
+<span class="fc bfc" id="L109" title="All 2 branches covered.">            for (Edge&lt;V, E&gt; ed : eas) {</span>
+<span class="fc" id="L110">                edges.add(ed);</span>
+<span class="fc" id="L111">            }</span>
+<span class="fc" id="L112">        }</span>
+
+<span class="fc" id="L114">        return edges;</span>
+    }
+
+    @Override
+    public Edge&lt;V, E&gt; getEdge(V vOrig, V vDest) {
+
+<span class="fc bfc" id="L120" title="All 4 branches covered.">        if (!validVertex(vOrig) || !validVertex(vDest)) {</span>
+<span class="fc" id="L121">            return null;</span>
+        }
+
+<span class="fc" id="L124">        Vertex&lt;V, E&gt; vorig = vertices.get(vOrig);</span>
+
+<span class="fc" id="L126">        return vorig.getEdge(vDest);</span>
+    }
+
+    @Override
+    public V[] endVertices(Edge&lt;V, E&gt; edge) {
+
+<span class="fc bfc" id="L132" title="All 2 branches covered.">        if (edge == null) {</span>
+<span class="fc" id="L133">            return null;</span>
+        }
+
+<span class="pc bpc" id="L136" title="2 of 4 branches missed.">        if (!validVertex(edge.getVOrig()) || !validVertex(edge.getVDest())) {</span>
+<span class="nc" id="L137">            return null;</span>
+        }
+
+<span class="fc" id="L140">        Vertex&lt;V, E&gt; vorig = vertices.get(edge.getVOrig());</span>
+
+<span class="pc bpc" id="L142" title="1 of 2 branches missed.">        if (!edge.equals(vorig.getEdge(edge.getVDest()))) {</span>
+<span class="nc" id="L143">            return null;</span>
+        }
+
+<span class="fc" id="L146">        return edge.getEndpoints();</span>
+    }
+
+    @Override
+    public V opposite(V vert, Edge&lt;V, E&gt; edge) {
+
+<span class="pc bpc" id="L152" title="1 of 2 branches missed.">        if (!validVertex(vert)) {</span>
+<span class="nc" id="L153">            return null;</span>
+        }
+
+<span class="fc" id="L156">        Vertex&lt;V, E&gt; vertex = vertices.get(vert);</span>
+
+<span class="fc" id="L158">        return vertex.getAdjVert(edge);</span>
+    }
+
+    @Override
+    public int outDegree(V vert) {
+
+<span class="fc bfc" id="L164" title="All 2 branches covered.">        if (!validVertex(vert)) {</span>
+<span class="fc" id="L165">            return -1;</span>
+        }
+
+<span class="fc" id="L168">        Vertex&lt;V, E&gt; vertex = vertices.get(vert);</span>
+
+<span class="fc" id="L170">        return vertex.numAdjVerts();</span>
+    }
+
+    @Override
+    public int inDegree(V vert) {
+
+<span class="fc bfc" id="L176" title="All 2 branches covered.">        if (!validVertex(vert)) {</span>
+<span class="fc" id="L177">            return -1;</span>
+        }
+
+<span class="fc" id="L180">        int degree = 0;</span>
+<span class="fc bfc" id="L181" title="All 2 branches covered.">        for (V otherVert : vertices.keySet()) {</span>
+<span class="fc bfc" id="L182" title="All 2 branches covered.">            if (getEdge(otherVert, vert) != null) {</span>
+<span class="fc" id="L183">                degree++;</span>
+            }
+<span class="fc" id="L185">        }</span>
+
+<span class="fc" id="L187">        return degree;</span>
+    }
+
+    @Override
+    public Iterable&lt;Edge&lt;V, E&gt;&gt; outgoingEdges(V vert) {
+
+<span class="fc bfc" id="L193" title="All 2 branches covered.">        if (!validVertex(vert)) {</span>
+<span class="fc" id="L194">            return null;</span>
+        }
+
+<span class="fc" id="L197">        Vertex&lt;V, E&gt; vertex = vertices.get(vert);</span>
+
+<span class="fc" id="L199">        return vertex.getAllOutEdges();</span>
+    }
+
+    @Override
+    public Iterable&lt;Edge&lt;V, E&gt;&gt; incomingEdges(V vert) {
+<span class="fc bfc" id="L204" title="All 2 branches covered.">        if (!validVertex(vert)) {</span>
+<span class="fc" id="L205">            return null;</span>
+        }
+
+<span class="fc" id="L208">        ArrayList&lt;Edge&lt;V, E&gt;&gt; retorno = new ArrayList&lt;&gt;();</span>
+
+<span class="fc" id="L210">        Iterable&lt;Edge&lt;V, E&gt;&gt; outEdges = edges();</span>
+<span class="fc bfc" id="L211" title="All 2 branches covered.">        for (Edge&lt;V, E&gt; edge : outEdges) {</span>
+<span class="fc bfc" id="L212" title="All 2 branches covered.">            if (edge.getVDest().equals(vert)) {</span>
+<span class="fc" id="L213">                retorno.add(edge);</span>
+            }
+<span class="fc" id="L215">        }</span>
+
+<span class="fc" id="L217">        return retorno;</span>
+    }
+
+    @Override
+    public boolean insertVertex(V vert) {
+        //verifica se o vertice ja existe, e se nao existir, vai criar um vertex passando a informacao
+        // e depois incrementa o numero de vertices do grafo
+<span class="fc bfc" id="L224" title="All 2 branches covered.">        if (validVertex(vert)) {</span>
+<span class="fc" id="L225">            return false;</span>
+        }
+
+<span class="fc" id="L228">        Vertex&lt;V, E&gt; vertex = new Vertex&lt;&gt;(numVert, vert);</span>
+<span class="fc" id="L229">        vertices.put(vert, vertex);</span>
+<span class="fc" id="L230">        numVert++;</span>
+
+<span class="fc" id="L232">        return true;</span>
+    }
+
+    @Override
+    public boolean insertEdge(V vOrig, V vDest, E eInf, double eWeight) {
+        //valida a informacao relativa aos 2 vertices. se nao existirem, ele cria
+        //cria um ramo entre 2 vertices e adiciona o ramo
+<span class="fc bfc" id="L239" title="All 2 branches covered.">        if (getEdge(vOrig, vDest) != null) {</span>
+<span class="fc" id="L240">            return false;</span>
+        }
+
+<span class="fc bfc" id="L243" title="All 2 branches covered.">        if (!validVertex(vOrig)) {</span>
+<span class="fc" id="L244">            insertVertex(vOrig);</span>
+        }
+
+<span class="fc bfc" id="L247" title="All 2 branches covered.">        if (!validVertex(vDest)) {</span>
+<span class="fc" id="L248">            insertVertex(vDest);</span>
+        }
+
+<span class="fc" id="L251">        Vertex&lt;V, E&gt; vorig = vertices.get(vOrig);</span>
+<span class="fc" id="L252">        Vertex&lt;V, E&gt; vdest = vertices.get(vDest);</span>
+
+<span class="fc" id="L254">        Edge&lt;V, E&gt; newEdge = new Edge&lt;&gt;(eInf, eWeight, vorig, vdest);</span>
+<span class="fc" id="L255">        vorig.addAdjVert(vDest, newEdge);</span>
+        // e incrementa o nr de ramos do grafo
+<span class="fc" id="L257">        numEdge++;</span>
+
+        //if graph is not direct insert other edge in the opposite direction 
+        
+<span class="pc bpc" id="L261" title="1 of 4 branches missed.">        if (!isDirected &amp;&amp; getEdge(vDest, vOrig) == null) {     // if vDest different vOrig</span>
+<span class="fc" id="L262">            Edge&lt;V, E&gt; otherEdge = new Edge&lt;&gt;(eInf, eWeight, vdest, vorig);</span>
+<span class="fc" id="L263">            vdest.addAdjVert(vOrig, otherEdge);</span>
+<span class="fc" id="L264">            numEdge++;</span>
+        }
+
+<span class="fc" id="L267">        return true;</span>
+    }
+
+    @Override
+    public boolean removeVertex(V vert) {
+
+<span class="fc bfc" id="L273" title="All 2 branches covered.">        if (!validVertex(vert)) {</span>
+<span class="fc" id="L274">            return false;</span>
+        }
+
+        //remove all edges that point to vert
+<span class="fc bfc" id="L278" title="All 2 branches covered.">        for (Edge&lt;V, E&gt; edge : incomingEdges(vert)) {</span>
+<span class="fc" id="L279">            V vadj = edge.getVOrig();</span>
+<span class="fc" id="L280">            removeEdge(vadj, vert);</span>
+<span class="fc" id="L281">        }</span>
+
+<span class="fc" id="L283">        Vertex&lt;V, E&gt; vertex = vertices.get(vert);</span>
+
+        //update the keys of subsequent vertices in the map
+<span class="fc bfc" id="L286" title="All 2 branches covered.">        for (Vertex&lt;V, E&gt; v : vertices.values()) {</span>
+<span class="fc" id="L287">            int keyVert = v.getKey();</span>
+<span class="fc bfc" id="L288" title="All 2 branches covered.">            if (keyVert &gt; vertex.getKey()) {</span>
+<span class="fc" id="L289">                keyVert = keyVert - 1;</span>
+<span class="fc" id="L290">                v.setKey(keyVert);</span>
+            }
+<span class="fc" id="L292">        }</span>
+        //The edges that live from vert are removed with the vertex    
+<span class="fc" id="L294">        vertices.remove(vert);</span>
+
+<span class="fc" id="L296">        numVert--;</span>
+
+<span class="fc" id="L298">        return true;</span>
+    }
+
+    @Override
+    public boolean removeEdge(V vOrig, V vDest) {
+
+<span class="fc bfc" id="L304" title="All 4 branches covered.">        if (!validVertex(vOrig) || !validVertex(vDest)) {</span>
+<span class="fc" id="L305">            return false;</span>
+        }
+
+<span class="fc" id="L308">        Edge&lt;V, E&gt; edge = getEdge(vOrig, vDest);</span>
+
+<span class="pc bpc" id="L310" title="1 of 2 branches missed.">        if (edge == null) {</span>
+<span class="nc" id="L311">            return false;</span>
+        }
+
+<span class="fc" id="L314">        Vertex&lt;V, E&gt; vorig = vertices.get(vOrig);</span>
+
+<span class="fc" id="L316">        vorig.remAdjVert(vDest);</span>
+<span class="fc" id="L317">        numEdge--;</span>
+
+        //if graph is not direct 
+<span class="fc bfc" id="L320" title="All 2 branches covered.">        if (!isDirected) {</span>
+<span class="fc" id="L321">            edge = getEdge(vDest, vOrig);</span>
+<span class="pc bpc" id="L322" title="1 of 2 branches missed.">            if (edge != null) {</span>
+<span class="fc" id="L323">                Vertex&lt;V, E&gt; vdest = vertices.get(vDest);</span>
+<span class="fc" id="L324">                vdest.remAdjVert(vOrig);</span>
+<span class="fc" id="L325">                numEdge--;</span>
+            }
+        }
+<span class="fc" id="L328">        return true;</span>
+    }
+
+    /**
+     * Returns a clone of the graph
+     *
+     * @return
+     */
+    @Override
+    public Graph&lt;V, E&gt; clone() {
+
+<span class="fc" id="L339">        Graph&lt;V, E&gt; newObject = new Graph&lt;&gt;(this.isDirected);</span>
+
+        //insert all vertices
+<span class="fc bfc" id="L342" title="All 2 branches covered.">        for (V vert : vertices.keySet()) {</span>
+<span class="fc" id="L343">            newObject.insertVertex(vert);</span>
+<span class="fc" id="L344">        }</span>
+
+        //insert all edges
+<span class="fc bfc" id="L347" title="All 2 branches covered.">        for (V vert1 : vertices.keySet()) {</span>
+<span class="fc bfc" id="L348" title="All 2 branches covered.">            for (Edge&lt;V, E&gt; e : this.outgoingEdges(vert1)) {</span>
+<span class="pc bpc" id="L349" title="1 of 2 branches missed.">                if (e != null) {</span>
+<span class="fc" id="L350">                    V vert2 = this.opposite(vert1, e);</span>
+<span class="fc" id="L351">                    newObject.insertEdge(vert1, vert2, e.getElement(), e.getWeight());</span>
+                }
+<span class="fc" id="L353">            }</span>
+<span class="fc" id="L354">        }</span>
+
+<span class="fc" id="L356">        return newObject;</span>
+    }
+
+    /* equals implementation
+     * @param the other graph to test for equality
+     * @return true if both objects represent the same graph
+     */
+    @Override
+    public boolean equals(Object otherObj) {
+
+<span class="fc bfc" id="L366" title="All 2 branches covered.">        if (this == otherObj) {</span>
+<span class="fc" id="L367">            return true;</span>
+        }
+
+<span class="pc bpc" id="L370" title="1 of 4 branches missed.">        if (otherObj == null || this.getClass() != otherObj.getClass()) {</span>
+<span class="fc" id="L371">            return false;</span>
+        }
+
+<span class="fc" id="L374">        Graph&lt;V, E&gt; otherGraph = (Graph&lt;V, E&gt;) otherObj;</span>
+
+<span class="fc bfc" id="L376" title="All 4 branches covered.">        if (numVert != otherGraph.numVertices() || numEdge != otherGraph.numEdges()) {</span>
+<span class="fc" id="L377">            return false;</span>
+        }
+
+        //graph must have same vertices
+        boolean eqvertex;
+<span class="fc bfc" id="L382" title="All 2 branches covered.">        for (V v1 : this.vertices()) {</span>
+<span class="fc" id="L383">            eqvertex = false;</span>
+<span class="fc bfc" id="L384" title="All 2 branches covered.">            for (V v2 : otherGraph.vertices()) {</span>
+<span class="fc bfc" id="L385" title="All 2 branches covered.">                if (v1.equals(v2)) {</span>
+<span class="fc" id="L386">                    eqvertex = true;</span>
+                }
+<span class="fc" id="L388">            }</span>
+
+<span class="pc bpc" id="L390" title="1 of 2 branches missed.">            if (!eqvertex) {</span>
+<span class="nc" id="L391">                return false;</span>
+            }
+<span class="fc" id="L393">        }</span>
+<span class="fc" id="L394">        return true;</span>
+    }
+
+    @Override
+    public int hashCode() {
+<span class="fc" id="L399">        int hash = 5;</span>
+<span class="fc" id="L400">        hash = 97 * hash + this.numVert;</span>
+<span class="fc" id="L401">        hash = 97 * hash + this.numEdge;</span>
+<span class="fc" id="L402">        hash = 97 * hash + Objects.hashCode(this.vertices);</span>
+<span class="fc" id="L403">        return hash;</span>
+    }
+
+    /**
+     * string representation
+     *
+     * @return
+     */
+    @Override
+    public String toString() {
+<span class="fc" id="L413">        String s = &quot;&quot;;</span>
+<span class="fc bfc" id="L414" title="All 2 branches covered.">        if (numVert == 0) {</span>
+<span class="fc" id="L415">            s = &quot;\nGraph not defined!!&quot;;</span>
+        } else {
+<span class="fc" id="L417">            s = &quot;Graph: &quot; + numVert + &quot; vertices, &quot; + numEdge + &quot; edges\n&quot;;</span>
+        }
+<span class="fc" id="L419">        return s;</span>
+    }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

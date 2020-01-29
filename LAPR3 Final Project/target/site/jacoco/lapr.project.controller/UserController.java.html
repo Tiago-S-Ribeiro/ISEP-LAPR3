@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="pt"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>UserController.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">ride-sharing</a> &gt; <a href="index.source.html" class="el_package">lapr.project.controller</a> &gt; <span class="el_source">UserController.java</span></div><h1>UserController.java</h1><pre class="source lang-java linenums">/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package lapr.project.controller;
+
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.TreeMap;
+import lapr.project.data.UserDataHandler;
+import lapr.project.model.InvoiceLine;
+import lapr.project.model.PointInterest;
+import lapr.project.model.Rental;
+import lapr.project.model.User;
+
+/**
+ *
+ * @author Beatriz Ribeiro
+ */
+public class UserController {
+
+    private final UserDataHandler userDataHandler;
+
+    /**
+     *
+     * @param userDataHandler
+     */
+<span class="fc" id="L30">    public UserController(UserDataHandler userDataHandler) {</span>
+<span class="fc" id="L31">        this.userDataHandler = userDataHandler;</span>
+<span class="fc" id="L32">    }</span>
+
+    public User addUser(String email, String username, String creditCard, float cyclingAverage, int height,
+            float weight, String gender, String pwd) throws SQLException {
+<span class="fc" id="L36">        User user = new User(email, username, creditCard, cyclingAverage, height, weight, gender, pwd);</span>
+<span class="fc" id="L37">        user.setIdUser(userDataHandler.add(user));</span>
+<span class="fc" id="L38">        return user;</span>
+    }
+
+    public User getById(int id) {
+<span class="fc" id="L42">        User user = null;</span>
+
+<span class="fc" id="L44">        user = userDataHandler.getById(id);</span>
+
+<span class="fc" id="L46">        return user;</span>
+    }
+
+    /**
+     * Returns the User with the provided username
+     *
+     * @param username of the User
+     * @return User object
+     */
+    public User getUserByUsername(String username) {
+<span class="fc" id="L56">        User u = null;</span>
+
+<span class="fc" id="L58">        u = userDataHandler.getUserByUsername(username);</span>
+
+<span class="fc" id="L60">        return u;</span>
+    }
+
+    public User login(String email, String password) {
+<span class="fc" id="L64">        User user = null;</span>
+
+<span class="fc" id="L66">        int id = userDataHandler.validateLogin(email, password);</span>
+<span class="fc" id="L67">        user = userDataHandler.getById(id);</span>
+
+<span class="fc" id="L69">        return user;</span>
+    }
+
+    public double calculateAmountCalories(ArrayList&lt;PointInterest&gt; path, int userId, int vehicleId) {
+
+<span class="fc" id="L74">        double calories = 0;</span>
+
+<span class="fc" id="L76">        calories = userDataHandler.calculateAmountCalories(path, userId, vehicleId);</span>
+
+<span class="fc" id="L78">        return calories;</span>
+
+    }
+
+    public List&lt;Rental&gt; getUserHistorical(int id) {
+
+<span class="fc" id="L84">        return userDataHandler.getUserHistorical(id);</span>
+
+    }
+    
+    public TreeMap&lt;Long, InvoiceLine&gt; getUnpaidRentals(int idUser){
+        
+<span class="fc" id="L90">        return userDataHandler.getUnpaidRentals(idUser);</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

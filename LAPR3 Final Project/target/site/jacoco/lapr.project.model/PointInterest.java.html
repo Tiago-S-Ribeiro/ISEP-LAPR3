@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="pt"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>PointInterest.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">ride-sharing</a> &gt; <a href="index.source.html" class="el_package">lapr.project.model</a> &gt; <span class="el_source">PointInterest.java</span></div><h1>PointInterest.java</h1><pre class="source lang-java linenums">/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package lapr.project.model;
+
+/**
+ *
+ * @author Beatriz Ribeiro
+ */
+public class PointInterest {
+
+    private int idPoint;
+    private GeographicalLocation geoLocation;
+    private String description;
+
+<span class="fc" id="L18">    public PointInterest(GeographicalLocation geoLocation, String description) {</span>
+<span class="fc" id="L19">        this.idPoint = 0;</span>
+<span class="fc" id="L20">        this.geoLocation = geoLocation;</span>
+<span class="fc" id="L21">        this.description = description;</span>
+<span class="fc" id="L22">    }</span>
+
+<span class="fc" id="L24">    public PointInterest(int idPoint, GeographicalLocation geoLocation, String description) {</span>
+<span class="fc" id="L25">        this.idPoint = idPoint;</span>
+<span class="fc" id="L26">        this.geoLocation = geoLocation;</span>
+<span class="fc" id="L27">        this.description = description;</span>
+<span class="fc" id="L28">    }</span>
+
+    public String getDescription() {
+<span class="fc" id="L31">        return description;</span>
+    }
+
+    public GeographicalLocation getGeoLocation() {
+<span class="fc" id="L35">        return geoLocation;</span>
+    }
+
+    public int getIdPoint() {
+<span class="fc" id="L39">        return idPoint;</span>
+    }
+
+    public void setDescription(String description) {
+<span class="fc" id="L43">        this.description = description;</span>
+<span class="fc" id="L44">    }</span>
+
+    public void setGeoLocation(GeographicalLocation geoLocation) {
+<span class="fc" id="L47">        this.geoLocation = geoLocation;</span>
+<span class="fc" id="L48">    }</span>
+
+    public void setIdPoint(int idPoint) {
+<span class="fc" id="L51">        this.idPoint = idPoint;</span>
+<span class="fc" id="L52">    }</span>
+
+    /**
+     * Hashcode
+     *
+     * @return An integer representative of the hash code of this instance.
+     */
+    @Override
+    public int hashCode() {
+<span class="fc" id="L61">        int hash = 5;</span>
+<span class="fc" id="L62">        hash = 41 * hash + this.idPoint;</span>
+<span class="fc" id="L63">        return hash;</span>
+    }
+
+    /**
+     * Equals method.
+     *
+     * @param obj The other instance passed as a parameter.
+     * @return True if both objects are the same, false if not.
+     */
+    @Override
+    public boolean equals(Object obj) {
+<span class="fc bfc" id="L74" title="All 2 branches covered.">        if (this == obj) {</span>
+<span class="fc" id="L75">            return true;</span>
+        }
+<span class="fc bfc" id="L77" title="All 4 branches covered.">        if (obj == null || this.getClass() != obj.getClass()) {</span>
+<span class="fc" id="L78">            return false;</span>
+        }
+
+<span class="fc" id="L81">        PointInterest other = (PointInterest) obj;</span>
+<span class="fc bfc" id="L82" title="All 2 branches covered.">        return (this.idPoint == other.idPoint);</span>
+    }
+    
+    @Override
+    public String toString() {
+<span class="nc" id="L87">        return &quot;PointInterest{&quot; + &quot;idPoint=&quot; + idPoint + '}';</span>
+    }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

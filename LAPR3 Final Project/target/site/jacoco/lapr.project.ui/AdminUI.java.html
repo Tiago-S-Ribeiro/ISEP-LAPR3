@@ -1,0 +1,517 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="pt"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>AdminUI.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">ride-sharing</a> &gt; <a href="index.source.html" class="el_package">lapr.project.ui</a> &gt; <span class="el_source">AdminUI.java</span></div><h1>AdminUI.java</h1><pre class="source lang-java linenums">/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package lapr.project.ui;
+
+import static java.lang.System.exit;
+import java.sql.SQLException;
+import java.util.Map;
+import java.util.Scanner;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javafx.util.Pair;
+import lapr.project.controller.ParkController;
+import lapr.project.controller.VehicleController;
+import lapr.project.data.ParkDataHandler;
+import lapr.project.data.VehicleDataHandler;
+import static lapr.project.ui.LoginUI.isNumeric;
+
+/**
+ *
+ * @author TiagoRibeiro
+ */
+public class AdminUI {
+
+    /**
+     * Scanner
+     */
+<span class="nc" id="L30">    public static final Scanner INPUT = new Scanner(System.in);</span>
+    /**
+     * SonarQube suggestion because 'State:' is presented more than 2 times in different situations
+     */
+    public static final String STATE = &quot;\nState:\t\t&quot;;
+    /**
+     * SonarQube suggestion because 'added with sucess.' message is presented more than 2 times in different situations (this constant eliminates one codeSmell) 
+     */
+    public static final String ADDED_W_SUCCESS = &quot;' added with sucess.\n\n&quot;;
+    
+<span class="nc" id="L40">    public AdminUI() {</span>
+        //Dummy constructor to be called and have acess to the instance methods of AdminUI
+<span class="nc" id="L42">    }</span>
+
+    /**
+     * Main menu for the Administrator
+     */
+    public static void showAdminScreen() {
+<span class="nc" id="L48">        System.out.println(&quot;\nRIDE SHARING - ADMINISTRATOR MENU\n--------------------------------&quot;</span>
+                + &quot;\n 1 - Add park&quot;
+                + &quot;\n 2 - Add point of interest&quot;
+                + &quot;\n 3 - Remove park&quot;
+                + &quot;\n 4 - Update park&quot;
+                + &quot;\n 5 - Add vehicle&quot;
+                + &quot;\n 6 - Remove vehicle&quot;
+                + &quot;\n 7 - Update vehicle&quot;
+                + &quot;\n 8 - Report about unlocked vehicles&quot;
+                + &quot;\n 9 - Add path&quot;
+                + &quot;\n 0 - Exit&quot;
+                + &quot;\n Choose one of the options above.&quot;);
+<span class="nc" id="L60">    }</span>
+
+    /**
+     * Menu loop that allows navigation through the various options
+     */
+    public void loop() {
+        String opt;
+        do {
+<span class="nc" id="L68">            showAdminScreen();</span>
+<span class="nc" id="L69">            opt = INPUT.nextLine();</span>
+
+<span class="nc bnc" id="L71" title="All 11 branches missed.">            switch (opt) {</span>
+                case &quot;1&quot;:
+<span class="nc" id="L73">                    addPark();</span>
+<span class="nc" id="L74">                    break;</span>
+                case &quot;2&quot;:
+<span class="nc" id="L76">                    addPOI();</span>
+<span class="nc" id="L77">                    break;</span>
+                case &quot;3&quot;:
+<span class="nc" id="L79">                    removePark();</span>
+<span class="nc" id="L80">                    break;</span>
+                case &quot;4&quot;:
+<span class="nc" id="L82">                    updatePark();</span>
+<span class="nc" id="L83">                    break;</span>
+                case &quot;5&quot;:
+<span class="nc" id="L85">                    addVehicle();</span>
+<span class="nc" id="L86">                    break;</span>
+                case &quot;6&quot;:
+<span class="nc" id="L88">                    removeVehicle();</span>
+<span class="nc" id="L89">                    break;</span>
+                case &quot;7&quot;:
+<span class="nc" id="L91">                    updateVehicle();</span>
+<span class="nc" id="L92">                    break;</span>
+                case &quot;8&quot;:
+<span class="nc" id="L94">                    getUnlockedvehicles();</span>
+<span class="nc" id="L95">                    break;</span>
+                case &quot;9&quot;:
+<span class="nc" id="L97">                    addPath();</span>
+<span class="nc" id="L98">                    break;</span>
+                case &quot;0&quot;:
+<span class="nc" id="L100">                    exit(0);</span>
+<span class="nc" id="L101">                    break;</span>
+                default:
+<span class="nc" id="L103">                    System.out.println(&quot;Invalid option&quot;);</span>
+            }
+<span class="nc bnc" id="L105" title="All 4 branches missed.">        } while (!opt.equals(&quot;0&quot;) || isNumeric(opt));</span>
+<span class="nc" id="L106">    }</span>
+
+    /**
+     * Interface that allows the addition of a park into the system
+     */
+    public void addPark() {
+
+<span class="nc" id="L113">        System.out.println(&quot;\nInsert the park description/name:&quot;);</span>
+<span class="nc" id="L114">        String description = INPUT.nextLine();</span>
+
+<span class="nc" id="L116">        System.out.println(&quot;\nInsert the park reference (Ex: 'Casa da Música' could be CdM):&quot;);</span>
+<span class="nc" id="L117">        String parkRef = INPUT.nextLine();</span>
+
+<span class="nc" id="L119">        System.out.println(&quot;\nIs the park going to be available immediately after creation? (Y/N)&quot;);</span>
+<span class="nc" id="L120">        String answer = INPUT.nextLine();</span>
+        int state;
+<span class="nc bnc" id="L122" title="All 4 branches missed.">        if (answer.equalsIgnoreCase(&quot;Y&quot;) || answer.equalsIgnoreCase(&quot;YES&quot;)) {</span>
+<span class="nc" id="L123">            state = 1;</span>
+        } else {
+<span class="nc" id="L125">            state = 0;</span>
+        }
+
+<span class="nc" id="L128">        System.out.println(&quot;\nWhat will be the park's input voltage:&quot;);</span>
+<span class="nc" id="L129">        int inputVoltage = INPUT.nextInt();</span>
+
+<span class="nc" id="L131">        System.out.println(&quot;\nWhat will be the park's input current:&quot;);</span>
+<span class="nc" id="L132">        int inputCurrent = INPUT.nextInt();</span>
+
+<span class="nc" id="L134">        System.out.println(&quot;\nWhat will be the park's bicycle capacity:&quot;);</span>
+<span class="nc" id="L135">        int maxCapacityBike = INPUT.nextInt();</span>
+
+<span class="nc" id="L137">        System.out.println(&quot;\nWhat will be the park's scooter capacity:&quot;);</span>
+<span class="nc" id="L138">        int maxCapacityScooter = INPUT.nextInt();</span>
+
+<span class="nc" id="L140">        System.out.println(&quot;\nInsert the new park latitude coordinate:&quot;);</span>
+<span class="nc" id="L141">        double latitude = INPUT.nextDouble();</span>
+
+<span class="nc" id="L143">        System.out.println(&quot;\nInsert the new park longitude coordinate:&quot;);</span>
+<span class="nc" id="L144">        double longitude = INPUT.nextDouble();</span>
+
+<span class="nc" id="L146">        System.out.println(&quot;\nInsert the new park elevation coordinate:&quot;);</span>
+<span class="nc" id="L147">        double elevation = INPUT.nextDouble();</span>
+        
+<span class="nc" id="L149">        System.out.println(&quot;\nDescription:\t&quot; + description</span>
+                + &quot;\nReference:\t&quot; + parkRef
+                + STATE + state
+                + &quot;\nInput Voltage:\t&quot; + inputVoltage
+                + &quot;\nInput Current:\t&quot; + inputCurrent
+                + &quot;\nBicycle Spots:\t&quot; + maxCapacityBike
+                + &quot;\nScooter Spots:\t&quot; + maxCapacityScooter
+                + &quot;\nLatitude:\t&quot; + latitude
+                + &quot;\nLongitude:\t&quot; + longitude
+                + &quot;\nElevation:\t&quot; + elevation);
+<span class="nc" id="L159">        System.out.println(&quot;\nPlease confirm the provided information for a new park: (Y/N)&quot;);</span>
+<span class="nc" id="L160">        INPUT.nextLine();</span>
+<span class="nc" id="L161">        String confirmation = INPUT.nextLine();</span>
+
+<span class="nc bnc" id="L163" title="All 4 branches missed.">        if (confirmation.equalsIgnoreCase(&quot;Y&quot;) || confirmation.equalsIgnoreCase(&quot;YES&quot;)) {</span>
+            
+<span class="nc" id="L165">            ParkController pc = new ParkController(new ParkDataHandler());</span>
+            try {
+<span class="nc" id="L167">                pc.addPark(parkRef, description, state, inputVoltage, inputCurrent, latitude, longitude, elevation, maxCapacityBike, maxCapacityScooter);</span>
+<span class="nc" id="L168">            } catch (SQLException ex) {</span>
+<span class="nc" id="L169">                Logger.getLogger(AdminUI.class.getName()).log(Level.SEVERE, null, ex);</span>
+<span class="nc" id="L170">            }</span>
+<span class="nc" id="L171">            System.out.println(&quot;\n\nPark '&quot; + description + ADDED_W_SUCCESS);</span>
+
+<span class="nc" id="L173">            loop();</span>
+<span class="nc" id="L174">        } else {</span>
+<span class="nc" id="L175">            loop();</span>
+        }
+<span class="nc" id="L177">    }</span>
+
+    /**
+     * Interface that allows the addition of a point of interest into the system
+     */
+    public void addPOI() {
+
+<span class="nc" id="L184">        System.out.println(&quot;\nInsert the point of interest description/name:&quot;);</span>
+<span class="nc" id="L185">        String description = INPUT.nextLine();</span>
+
+<span class="nc" id="L187">        System.out.println(&quot;\nInsert the new point of interest latitude coordinate:&quot;);</span>
+<span class="nc" id="L188">        double latitude = INPUT.nextDouble();</span>
+
+<span class="nc" id="L190">        System.out.println(&quot;\nInsert the new point of interest longitude coordinate:&quot;);</span>
+<span class="nc" id="L191">        double longitude = INPUT.nextDouble();</span>
+
+<span class="nc" id="L193">        System.out.println(&quot;\nInsert the new point of interest elevation coordinate:&quot;);</span>
+<span class="nc" id="L194">        double elevation = INPUT.nextDouble();</span>
+
+<span class="nc" id="L196">        System.out.println(&quot;\nDescription:\t&quot; + description</span>
+                + &quot;\nLatitude:\t&quot; + latitude
+                + &quot;\nLongitude:\t&quot; + longitude
+                + &quot;\nElevation:\t&quot; + elevation);
+<span class="nc" id="L200">        System.out.println(&quot;\nPlease confirm the provided information for a new Point of Interest: (Y/N)&quot;);</span>
+<span class="nc" id="L201">        INPUT.nextLine();</span>
+<span class="nc" id="L202">        String confirmation = INPUT.nextLine();</span>
+
+<span class="nc bnc" id="L204" title="All 4 branches missed.">        if (confirmation.equalsIgnoreCase(&quot;Y&quot;) || confirmation.equalsIgnoreCase(&quot;YES&quot;)) {</span>
+
+<span class="nc" id="L206">            ParkController pc = new ParkController(new ParkDataHandler());</span>
+            try {
+<span class="nc" id="L208">                pc.addPOI(latitude, longitude, elevation, description);</span>
+<span class="nc" id="L209">            } catch (SQLException ex) {</span>
+<span class="nc" id="L210">                Logger.getLogger(AdminUI.class.getName()).log(Level.SEVERE, null, ex);</span>
+<span class="nc" id="L211">            }</span>
+<span class="nc" id="L212">            System.out.println(&quot;\n\nPoint of Interest '&quot; + description + ADDED_W_SUCCESS);</span>
+
+<span class="nc" id="L214">            loop();</span>
+<span class="nc" id="L215">        } else {</span>
+<span class="nc" id="L216">            loop();</span>
+        }
+<span class="nc" id="L218">    }</span>
+
+    /**
+     * Interface that allows the removal of a park off the system
+     */
+    public void removePark() {
+        //posso adicionar uma questao a perguntar se quer consultar os parques todos para conseguir ver o ID, e depois peço-o
+<span class="nc" id="L225">        System.out.println(&quot;Insert the ID of the park to be removed:&quot;);</span>
+<span class="nc" id="L226">        int idPark = INPUT.nextInt();</span>
+<span class="nc" id="L227">        System.out.println(&quot;Do you confirm the removal of the park with ID: &quot; + idPark + &quot;? (Y/N)&quot;);</span>
+<span class="nc" id="L228">        INPUT.nextLine();</span>
+<span class="nc" id="L229">        String confirmation = INPUT.nextLine();</span>
+        
+<span class="nc" id="L231">        ParkController pc = new ParkController(new ParkDataHandler()); </span>
+        
+<span class="nc bnc" id="L233" title="All 4 branches missed.">        if (confirmation.equalsIgnoreCase(&quot;Y&quot;) || confirmation.equalsIgnoreCase(&quot;YES&quot;)) {</span>
+            try {
+<span class="nc" id="L235">                pc.removePark(idPark);</span>
+<span class="nc" id="L236">            } catch (SQLException ex) {</span>
+<span class="nc" id="L237">                Logger.getLogger(AdminUI.class.getName()).log(Level.SEVERE, null, ex);</span>
+<span class="nc" id="L238">            }</span>
+<span class="nc" id="L239">            loop();</span>
+        }
+<span class="nc" id="L241">    }</span>
+
+    /**
+     * Interface that allows to update the information of a park
+     */
+    public void updatePark() {
+
+<span class="nc" id="L248">        System.out.println(&quot;Insert the ID of the park to be updated:&quot;);</span>
+<span class="nc" id="L249">        int idPark = INPUT.nextInt();</span>
+        
+<span class="nc" id="L251">        ParkController pc = new ParkController(new ParkDataHandler()); </span>
+<span class="nc bnc" id="L252" title="All 2 branches missed.">        if(pc.getPark(idPark) != null){</span>
+<span class="nc" id="L253">            System.out.println(&quot;Insert the new park's description:&quot;);</span>
+<span class="nc" id="L254">            String description = INPUT.nextLine();</span>
+            try {
+<span class="nc" id="L256">                pc.updatePark(idPark, description);</span>
+<span class="nc" id="L257">            } catch (SQLException ex) {</span>
+<span class="nc" id="L258">                Logger.getLogger(AdminUI.class.getName()).log(Level.SEVERE, null, ex);</span>
+<span class="nc" id="L259">            }</span>
+<span class="nc" id="L260">        }else{</span>
+<span class="nc" id="L261">            System.out.println(&quot;There isn't any park with the inserted ID.&quot;);</span>
+        }
+<span class="nc" id="L263">    }</span>
+
+    /**
+     * Interface that allows the addition of a vehicle into the system
+     */
+    public void addVehicle() {
+
+<span class="nc" id="L270">        System.out.println(&quot;\nChoose the vehicle type:&quot;</span>
+                + &quot;\n 1 - Bicycle&quot;
+                + &quot;\n 2 - Scooter&quot;
+                + &quot;\n 0 - Return&quot;);
+<span class="nc" id="L274">        int type = INPUT.nextInt();</span>
+
+<span class="nc bnc" id="L276" title="All 4 branches missed.">        switch (type) {</span>
+            case 1:
+<span class="nc" id="L278">                addBicycle(type);</span>
+<span class="nc" id="L279">                break;</span>
+            case 2:
+<span class="nc" id="L281">                addScooter(type);</span>
+<span class="nc" id="L282">                break;</span>
+            case 0:
+<span class="nc" id="L284">                loop();</span>
+<span class="nc" id="L285">                break;</span>
+            default:
+<span class="nc" id="L287">                System.out.println(&quot;Invalid type, try again:&quot;);</span>
+<span class="nc" id="L288">                addVehicle();</span>
+                break;
+        }
+<span class="nc" id="L291">    }</span>
+
+    /**
+     * Interface that allows the addition of a scooter into the system
+     *
+     * @param type of the scooter
+     */
+    public void addScooter(int type) {
+
+<span class="nc" id="L300">        System.out.println(&quot;Insert the ID of the park the Vehicle will be attributed to:&quot;);</span>
+<span class="nc" id="L301">        int idPark = INPUT.nextInt();</span>
+        //AQUI POSSO CHAMAR UMA VERIFICACAO PARA O PARK AVAILABILITY PARA VER SE O PARK ESCOLHIDO TEM ESPAÇO
+
+<span class="nc" id="L304">        System.out.println(&quot;Insert the Scooter maximum battery capacity:&quot;);</span>
+<span class="nc" id="L305">        int maxBatteryCapacity = INPUT.nextInt();</span>
+<span class="nc" id="L306">        int actualBatteryCapacity = maxBatteryCapacity;</span>
+
+<span class="nc" id="L308">        System.out.println(&quot;\nIs the scooter going to be available immediately after creation? (Y/N)&quot;);</span>
+<span class="nc" id="L309">        String answer = INPUT.nextLine();</span>
+        int state;
+<span class="nc bnc" id="L311" title="All 4 branches missed.">        if (answer.equalsIgnoreCase(&quot;Y&quot;) || answer.equalsIgnoreCase(&quot;YES&quot;)) {</span>
+<span class="nc" id="L312">            state = 1;</span>
+        } else {
+<span class="nc" id="L314">            state = 0;</span>
+        }
+
+<span class="nc" id="L317">        System.out.println(&quot;Insert the scooter's description:&quot;);</span>
+<span class="nc" id="L318">        String description = INPUT.nextLine();</span>
+
+<span class="nc" id="L320">        System.out.println(&quot;Insert the scooter's total weight:&quot;);</span>
+<span class="nc" id="L321">        double weight = INPUT.nextDouble();</span>
+
+<span class="nc" id="L323">        System.out.println(&quot;Insert the scooter's aerodynamic coefficient:&quot;);</span>
+<span class="nc" id="L324">        double aerodynamicCoefficient = INPUT.nextDouble();</span>
+
+<span class="nc" id="L326">        System.out.println(&quot;Insert the scooter's frontal area:&quot;);</span>
+<span class="nc" id="L327">        double frontalArea = INPUT.nextDouble();</span>
+        
+<span class="nc" id="L329">        System.out.println(&quot;Insert the scooter's motor:&quot;);</span>
+<span class="nc" id="L330">        int motor = INPUT.nextInt();</span>
+
+<span class="nc" id="L332">        System.out.println(&quot;\nDescription\t&quot; + description</span>
+                + STATE + state
+                + &quot;\nPark ID:\t&quot; + idPark
+                + &quot;\nBattery Capacity:\t&quot; + maxBatteryCapacity
+                + &quot;\nWeight:\t&quot; + weight
+                + &quot;\nAerodynamic Coefficient:\t&quot; + aerodynamicCoefficient
+                + &quot;\nFrontal Area:\t&quot; + frontalArea);
+
+<span class="nc" id="L340">        System.out.println(&quot;\nPlease confirm the provided information for a new scooter: (Y/N)&quot;);</span>
+<span class="nc" id="L341">        INPUT.nextLine();</span>
+<span class="nc" id="L342">        String confirmation = INPUT.nextLine();</span>
+
+<span class="nc bnc" id="L344" title="All 4 branches missed.">        if (confirmation.equalsIgnoreCase(&quot;Y&quot;) || confirmation.equalsIgnoreCase(&quot;YES&quot;)) {</span>
+
+<span class="nc" id="L346">            VehicleController vc = new VehicleController(new VehicleDataHandler());</span>
+            try {
+<span class="nc" id="L348">                vc.addScooter(idPark, type, maxBatteryCapacity, motor, actualBatteryCapacity, state, description, weight, aerodynamicCoefficient, frontalArea);</span>
+<span class="nc" id="L349">            } catch (SQLException ex) {</span>
+<span class="nc" id="L350">                Logger.getLogger(AdminUI.class.getName()).log(Level.SEVERE, null, ex);</span>
+<span class="nc" id="L351">            }</span>
+<span class="nc" id="L352">            System.out.println(&quot;\n\nScooter '&quot; + description + ADDED_W_SUCCESS);</span>
+
+<span class="nc" id="L354">            loop();</span>
+<span class="nc" id="L355">        } else {</span>
+<span class="nc" id="L356">            loop();</span>
+        }
+<span class="nc" id="L358">    }</span>
+
+    /**
+     * Interface that allows the addition of a bicycle into the system
+     *
+     * @param type of the bicycle
+     */
+    public void addBicycle(int type) {
+
+<span class="nc" id="L367">        System.out.println(&quot;Insert the ID of the park the Vehicle will be attributed to:&quot;);</span>
+<span class="nc" id="L368">        int idPark = INPUT.nextInt();</span>
+        //AQUI POSSO CHAMAR UMA VERIFICACAO PARA O PARK AVAILABILITY PARA VER SE O PARK ESCOLHIDO TEM ESPAÇO
+
+<span class="nc" id="L371">        System.out.println(&quot;\nIs the bicycle going to be available immediately after creation? (Y/N)&quot;);</span>
+<span class="nc" id="L372">        INPUT.next();</span>
+<span class="nc" id="L373">        String answer = INPUT.nextLine();</span>
+        int state;
+<span class="nc bnc" id="L375" title="All 4 branches missed.">        if (answer.equalsIgnoreCase(&quot;Y&quot;) || answer.equalsIgnoreCase(&quot;YES&quot;)) {</span>
+<span class="nc" id="L376">            state = 1;</span>
+        } else {
+<span class="nc" id="L378">            state = 0;</span>
+        }
+
+<span class="nc" id="L381">        System.out.println(&quot;\nInsert the bicycles's wheel size:&quot;);</span>
+<span class="nc" id="L382">        double wheelSize = INPUT.nextDouble();</span>
+
+<span class="nc" id="L384">        System.out.println(&quot;\nInsert the bicycles's description:&quot;);</span>
+<span class="nc" id="L385">        INPUT.next();</span>
+<span class="nc" id="L386">        String description = INPUT.nextLine();</span>
+
+<span class="nc" id="L388">        System.out.println(&quot;\nInsert the bicycles's total weight:&quot;);</span>
+<span class="nc" id="L389">        double weight = INPUT.nextDouble();</span>
+
+<span class="nc" id="L391">        System.out.println(&quot;\nInsert the scooter's aerodynamic coefficient:&quot;);</span>
+<span class="nc" id="L392">        double aerodynamicCoefficient = INPUT.nextDouble();</span>
+
+<span class="nc" id="L394">        System.out.println(&quot;\nInsert the scooter's frontal area:&quot;);</span>
+<span class="nc" id="L395">        double frontalArea = INPUT.nextDouble();</span>
+
+<span class="nc" id="L397">        System.out.println(&quot;\nDescription\t&quot; + description</span>
+                + STATE + state
+                + &quot;\nPark ID:\t&quot; + idPark
+                + &quot;\nWheel Size:\t&quot; + wheelSize
+                + &quot;\nWeight:\t&quot; + weight
+                + &quot;\nAerodynamic Coefficient:\t&quot; + aerodynamicCoefficient
+                + &quot;\nFrontal Area:\t&quot; + frontalArea);
+
+<span class="nc" id="L405">        System.out.println(&quot;\nPlease confirm the provided information for a new bicycle: (Y/N)&quot;);</span>
+<span class="nc" id="L406">        INPUT.nextLine();</span>
+<span class="nc" id="L407">        String confirmation = INPUT.nextLine();</span>
+
+<span class="nc bnc" id="L409" title="All 4 branches missed.">        if (confirmation.equalsIgnoreCase(&quot;Y&quot;) || confirmation.equalsIgnoreCase(&quot;YES&quot;)) {</span>
+
+<span class="nc" id="L411">            VehicleController vc = new VehicleController(new VehicleDataHandler());</span>
+            try {
+<span class="nc" id="L413">                vc.addBicycle(idPark, wheelSize, state, description, weight, aerodynamicCoefficient, frontalArea);</span>
+<span class="nc" id="L414">            } catch (SQLException ex) {</span>
+<span class="nc" id="L415">                Logger.getLogger(AdminUI.class.getName()).log(Level.SEVERE, null, ex);</span>
+<span class="nc" id="L416">            }</span>
+<span class="nc" id="L417">            System.out.println(&quot;\n\nBicycle '&quot; + description + ADDED_W_SUCCESS);</span>
+
+<span class="nc" id="L419">            loop();</span>
+<span class="nc" id="L420">        } else {</span>
+<span class="nc" id="L421">            loop();</span>
+        }
+<span class="nc" id="L423">    }</span>
+
+    /**
+     * Interface that allows the removal of a vehicle off the system
+     */
+    public void removeVehicle() {
+        //posso adicionar uma questao a perguntar se quer consultar os veiculos todos para conseguir ver o ID, e depois peço-o
+<span class="nc" id="L430">        System.out.println(&quot;Insert the ID of the vehicle to be removed:&quot;);</span>
+<span class="nc" id="L431">        int vehicleID = INPUT.nextInt();</span>
+<span class="nc" id="L432">        VehicleController vc = new VehicleController(new VehicleDataHandler());</span>
+
+<span class="nc" id="L434">        System.out.println(&quot;Do you confirm the removal of the vehicle with ID: &quot; + vehicleID + &quot;? (Y/N)&quot;);</span>
+<span class="nc" id="L435">        INPUT.nextLine();</span>
+<span class="nc" id="L436">        String confirmation = INPUT.nextLine();</span>
+
+<span class="nc bnc" id="L438" title="All 4 branches missed.">        if (confirmation.equalsIgnoreCase(&quot;Y&quot;) || confirmation.equalsIgnoreCase(&quot;YES&quot;)) {</span>
+            try {
+<span class="nc" id="L440">                vc.removeVehicle(vehicleID);</span>
+<span class="nc" id="L441">            } catch (SQLException ex) {</span>
+<span class="nc" id="L442">                Logger.getLogger(AdminUI.class.getName()).log(Level.SEVERE, null, ex);</span>
+<span class="nc" id="L443">            }</span>
+<span class="nc" id="L444">            System.out.println(&quot;\n\nVehicle was removed with sucess.\n\n&quot;);</span>
+<span class="nc" id="L445">            loop();</span>
+        } else {
+<span class="nc" id="L447">            loop();</span>
+        }
+<span class="nc" id="L449">    }</span>
+
+    /**
+     * Interface that allows to update the information of a vehicle
+     */
+    public void updateVehicle() {
+        //AINDA NAO IMPLEMENTADO
+<span class="nc" id="L456">        System.out.println(&quot;TO BE IMPLEMENTED.&quot;);</span>
+<span class="nc" id="L457">    }</span>
+
+    public void getUnlockedvehicles() {
+<span class="nc" id="L460">        VehicleController vc = new VehicleController(new VehicleDataHandler());</span>
+<span class="nc" id="L461">        Map&lt;Pair&lt;Integer, String&gt;, Pair&lt;Integer, String&gt;&gt; report = vc.getUnlockedVehicles();</span>
+<span class="nc bnc" id="L462" title="All 2 branches missed.">        if (!report.isEmpty()) {</span>
+<span class="nc bnc" id="L463" title="All 2 branches missed.">            for (Pair&lt;Integer, String&gt; keyPair : report.keySet()) {</span>
+<span class="nc" id="L464">                System.out.println(keyPair.getKey() + &quot; - &quot; + keyPair.getValue()</span>
+<span class="nc" id="L465">                        + &quot; - &quot; + report.get(keyPair).getKey() + &quot; - &quot; + report.get(keyPair).getValue());</span>
+<span class="nc" id="L466">            }</span>
+        }
+<span class="nc" id="L468">        System.out.println(&quot;OK to exit&quot;);</span>
+<span class="nc" id="L469">        String exit = INPUT.nextLine();</span>
+<span class="nc bnc" id="L470" title="All 2 branches missed.">        if (exit.equalsIgnoreCase(&quot;OK&quot;)) {</span>
+<span class="nc" id="L471">            loop();</span>
+        }
+<span class="nc" id="L473">    }</span>
+    
+    private void addPath() {
+        
+<span class="nc" id="L477">        System.out.println(&quot;\nInsert the id of the first point of interest:&quot;);</span>
+<span class="nc" id="L478">        int idPoiFrom = INPUT.nextInt();</span>
+
+<span class="nc" id="L480">        System.out.println(&quot;\nInsert the id of the second point of interest:&quot;);</span>
+<span class="nc" id="L481">        int idPoiTo = INPUT.nextInt();</span>
+
+<span class="nc" id="L483">        System.out.println(&quot;\nInsert the kicenit coefficient:&quot;);</span>
+<span class="nc" id="L484">        double kineticCoefficient = INPUT.nextDouble();</span>
+
+<span class="nc" id="L486">        System.out.println(&quot;\nInsert the wind direction:&quot;);</span>
+<span class="nc" id="L487">        float windDirection = INPUT.nextFloat();</span>
+        
+<span class="nc" id="L489">        System.out.println(&quot;\nInsert the wind speed:&quot;);</span>
+<span class="nc" id="L490">        float windSpeed = INPUT.nextFloat();</span>
+
+<span class="nc" id="L492">        System.out.println(&quot;\nId Poi From :\t&quot; + idPoiFrom</span>
+                + &quot;\nId Poi To:\t&quot; + idPoiTo
+                + &quot;\nKinetic Coefficient:\t&quot; + kineticCoefficient
+                + &quot;\nWind Direction:\t&quot; + windDirection
+                + &quot;\nWind Speed:\t&quot; + windSpeed);
+<span class="nc" id="L497">        System.out.println(&quot;\nPlease confirm the provided information for a new Path: (Y/N)&quot;);</span>
+<span class="nc" id="L498">        INPUT.nextLine();</span>
+<span class="nc" id="L499">        String confirmation = INPUT.nextLine();</span>
+
+<span class="nc bnc" id="L501" title="All 4 branches missed.">        if (confirmation.equalsIgnoreCase(&quot;Y&quot;) || confirmation.equalsIgnoreCase(&quot;YES&quot;)) {</span>
+
+            try {
+<span class="nc" id="L504">                ParkController pc = new ParkController(new ParkDataHandler());</span>
+<span class="nc" id="L505">                pc.addPath(idPoiFrom, idPoiTo, kineticCoefficient, windDirection, windSpeed);</span>
+<span class="nc" id="L506">                System.out.println(&quot;\n\nPath &quot; + ADDED_W_SUCCESS);</span>
+                
+<span class="nc" id="L508">                loop();</span>
+<span class="nc" id="L509">            } catch (SQLException ex) {</span>
+<span class="nc" id="L510">                Logger.getLogger(AdminUI.class.getName()).log(Level.SEVERE, null, ex);</span>
+<span class="nc" id="L511">            }</span>
+        } else {
+<span class="nc" id="L513">            loop();</span>
+        }
+<span class="nc" id="L515">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

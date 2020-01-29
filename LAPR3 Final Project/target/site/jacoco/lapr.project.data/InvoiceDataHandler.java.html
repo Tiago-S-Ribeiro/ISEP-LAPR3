@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="pt"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>InvoiceDataHandler.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">ride-sharing</a> &gt; <a href="index.source.html" class="el_package">lapr.project.data</a> &gt; <span class="el_source">InvoiceDataHandler.java</span></div><h1>InvoiceDataHandler.java</h1><pre class="source lang-java linenums">/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package lapr.project.data;
+
+import java.sql.CallableStatement;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import lapr.project.model.Invoice;
+import lapr.project.model.InvoiceLine;
+import oracle.jdbc.OracleTypes;
+
+/**
+ *
+ * @author jujps00
+ */
+public class InvoiceDataHandler {
+
+<span class="fc" id="L29">    private static final Logger WARNING_LOGGER_INVOICE = Logger.getLogger(Invoice.class.getName());</span>
+
+    private final DataHandler dataHandler;
+
+<span class="nc" id="L33">    public InvoiceDataHandler() {</span>
+<span class="nc" id="L34">        dataHandler = DataHandler.getInstance();</span>
+<span class="nc" id="L35">    }</span>
+
+    public static void warningError() {
+<span class="nc" id="L38">        WARNING_LOGGER_INVOICE.log(Level.WARNING, &quot;Error on reading Database.&quot;);</span>
+<span class="nc" id="L39">    }</span>
+
+    public int addInvoice(Invoice element, int month) throws SQLException {
+<span class="nc" id="L42">        CallableStatement callStmt = null;</span>
+<span class="nc" id="L43">        int id = 0;</span>
+
+<span class="nc" id="L45">        callStmt = dataHandler.getConnection().prepareCall(&quot;{? = call funcAddInvoice(?,?) }&quot;);</span>
+<span class="nc" id="L46">        callStmt.registerOutParameter(1, OracleTypes.INTEGER);</span>
+<span class="nc" id="L47">        callStmt.setInt(2, element.getidUser());</span>
+<span class="nc" id="L48">        callStmt.setInt(3, month);</span>
+<span class="nc" id="L49">        callStmt.execute();</span>
+
+<span class="nc" id="L51">        id = callStmt.getInt(1);</span>
+
+        try {
+<span class="nc" id="L54">            callStmt.close();</span>
+
+<span class="nc" id="L56">        } catch (SQLException | NullPointerException ex) {</span>
+<span class="nc" id="L57">            Logger.getLogger(InvoiceDataHandler.class.getName()).log(Level.WARNING, ex.getMessage());</span>
+<span class="nc" id="L58">        }</span>
+<span class="nc" id="L59">        return id;</span>
+    }
+
+    public Invoice getById(int id)  {
+<span class="nc" id="L63">        String query = &quot;SELECT * FROM invoice WHERE id_invoice= &quot; + id;</span>
+<span class="nc" id="L64">        Statement stm = null;</span>
+<span class="nc" id="L65">        ResultSet rst = null;</span>
+        try {
+<span class="nc" id="L67">            Connection con = DataHandler.getInstance().getConnection();</span>
+<span class="nc" id="L68">            stm = con.createStatement();</span>
+<span class="nc" id="L69">            rst = stm.executeQuery(query);</span>
+
+<span class="nc bnc" id="L71" title="All 2 branches missed.">            if (rst.next()) {</span>
+<span class="nc" id="L72">                int idUser = rst.getInt(2);</span>
+<span class="nc" id="L73">                String issueDate = String.valueOf(rst.getDate(4).getTime());</span>
+<span class="nc" id="L74">                double totalPrice = rst.getDouble(3);</span>
+<span class="nc" id="L75">                Invoice invoice = new Invoice(idUser);</span>
+<span class="nc" id="L76">                invoice.setIdInvoice(id);</span>
+<span class="nc" id="L77">                invoice.setIdUser(idUser);</span>
+<span class="nc" id="L78">                invoice.setIssueDate(issueDate);</span>
+<span class="nc" id="L79">                invoice.setTotalPrice(totalPrice);</span>
+<span class="nc" id="L80">                return invoice;</span>
+            }
+<span class="nc" id="L82">        } catch (SQLException ex) {</span>
+<span class="nc" id="L83">            Logger.getLogger(InvoiceDataHandler.class.getName()).log(Level.WARNING, ex.getMessage());</span>
+        } finally {
+            try {
+<span class="nc bnc" id="L86" title="All 2 branches missed.">                if (rst != null) {</span>
+<span class="nc" id="L87">                    rst.close();</span>
+                }
+<span class="nc bnc" id="L89" title="All 2 branches missed.">                if (stm != null) {</span>
+<span class="nc" id="L90">                    stm.close();</span>
+                }
+<span class="nc" id="L92">            } catch (SQLException ex) {</span>
+<span class="nc" id="L93">                Logger.getLogger(InvoiceDataHandler.class.getName()).log(Level.WARNING, ex.getMessage());</span>
+<span class="nc" id="L94">            }</span>
+            
+        }
+<span class="nc" id="L97">        return null;</span>
+    }
+    
+
+    
+
+    public List&lt;InvoiceLine&gt; getInvoiceLinesOfInvoice(int id) {
+<span class="nc" id="L104">        String query = &quot;SELECT * FROM invoice_line WHERE id_invoice= &quot; + id;</span>
+<span class="nc" id="L105">        Statement stm = null;</span>
+<span class="nc" id="L106">        ResultSet rst = null;</span>
+<span class="nc" id="L107">        List&lt;InvoiceLine&gt; invoiceLines = new ArrayList&lt;&gt;();</span>
+        try {
+<span class="nc" id="L109">            Connection con = DataHandler.getInstance().getConnection();</span>
+<span class="nc" id="L110">            stm = con.createStatement();</span>
+<span class="nc" id="L111">            rst = stm.executeQuery(query);</span>
+
+<span class="nc bnc" id="L113" title="All 2 branches missed.">            while (rst.next()) {</span>
+<span class="nc" id="L114">                int idRental = rst.getInt(1);</span>
+<span class="nc" id="L115">                int idVehicle = rst.getInt(3);</span>
+<span class="nc" id="L116">                double rentalDuration = rst.getInt(4);</span>
+<span class="nc" id="L117">                double rentalCost = rst.getDouble(5);</span>
+<span class="nc" id="L118">                String date = String.valueOf(rst.getDate(6).getTime());</span>
+<span class="nc" id="L119">                int earnedPoints = rst.getInt(7);</span>
+<span class="nc" id="L120">                InvoiceLine invoiceLine = new InvoiceLine(idRental, idVehicle, rentalDuration, rentalCost, date, earnedPoints);</span>
+<span class="nc" id="L121">                invoiceLines.add(invoiceLine);</span>
+<span class="nc" id="L122">            }</span>
+<span class="nc" id="L123">        } catch (SQLException ex) {</span>
+<span class="nc" id="L124">            Logger.getLogger(InvoiceDataHandler.class.getName()).log(Level.WARNING, ex.getMessage());</span>
+        } finally {
+            try {
+<span class="nc bnc" id="L127" title="All 2 branches missed.">                if (rst != null) {</span>
+<span class="nc" id="L128">                    rst.close();</span>
+                }
+<span class="nc bnc" id="L130" title="All 2 branches missed.">                if (stm != null) {</span>
+<span class="nc" id="L131">                    stm.close();</span>
+                }
+<span class="nc" id="L133">            } catch (SQLException ex) {</span>
+<span class="nc" id="L134">                Logger.getLogger(InvoiceDataHandler.class.getName()).log(Level.WARNING, ex.getMessage());</span>
+<span class="nc" id="L135">            }</span>
+        }
+<span class="nc" id="L137">        return null;</span>
+
+    }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

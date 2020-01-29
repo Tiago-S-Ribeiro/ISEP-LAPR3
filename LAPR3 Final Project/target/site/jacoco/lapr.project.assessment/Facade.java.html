@@ -1,0 +1,1823 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="pt"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Facade.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">ride-sharing</a> &gt; <a href="index.source.html" class="el_package">lapr.project.assessment</a> &gt; <span class="el_source">Facade.java</span></div><h1>Facade.java</h1><pre class="source lang-java linenums">package lapr.project.assessment;
+
+import java.io.*;
+import java.math.BigDecimal;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Set;
+import java.util.TreeMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javafx.util.Pair;
+import lapr.project.model.*;
+import lapr.project.controller.*;
+import lapr.project.data.*;
+import lapr.project.utils.PhysicsAlgorithms;
+
+<span class="nc" id="L20">public class Facade implements Serviceable {</span>
+
+    @Override
+    public int addBicycles(String s) {
+
+<span class="nc" id="L25">        BufferedReader br = null;</span>
+<span class="nc" id="L26">        String line = &quot;&quot;;</span>
+<span class="nc" id="L27">        String cvsSplitBy = &quot;;&quot;;</span>
+<span class="nc" id="L28">        VehicleController vc = new VehicleController(new VehicleDataHandler());</span>
+<span class="nc" id="L29">        ParkController pc = new ParkController(new ParkDataHandler());</span>
+<span class="nc" id="L30">        int count = 0;</span>
+        try {
+<span class="nc" id="L32">            DataHandler.getInstance().getConnection().setAutoCommit(false);</span>
+<span class="nc" id="L33">            br = new BufferedReader(new FileReader(s));</span>
+<span class="nc bnc" id="L34" title="All 2 branches missed.">            while ((line = br.readLine()) != null) {</span>
+<span class="nc bnc" id="L35" title="All 4 branches missed.">                if (!line.startsWith(&quot;#&quot;) &amp;&amp; !line.startsWith(&quot;bicycle&quot;)) {</span>
+
+<span class="nc" id="L37">                    String[] bikeInfo = line.split(cvsSplitBy);</span>
+
+<span class="nc" id="L39">                    String description = bikeInfo[0].trim();</span>
+<span class="nc" id="L40">                    float weight = Float.parseFloat(bikeInfo[1].trim());</span>
+<span class="nc" id="L41">                    double parkLatitude = Double.parseDouble(bikeInfo[2].trim());</span>
+<span class="nc" id="L42">                    double parkLongitude = Double.parseDouble(bikeInfo[3].trim());</span>
+<span class="nc" id="L43">                    float aerodynamicCoefficient = Float.parseFloat(bikeInfo[4].trim());</span>
+<span class="nc" id="L44">                    float frontalArea = Float.parseFloat(bikeInfo[5].trim());</span>
+<span class="nc" id="L45">                    int wheelSize = Integer.parseInt(bikeInfo[6].trim());</span>
+<span class="nc" id="L46">                    int idPark = pc.getParkByCoordinates(parkLatitude, parkLongitude).getIdPoint();</span>
+<span class="nc" id="L47">                    System.out.println(idPark);</span>
+<span class="nc" id="L48">                    Bicycle bicycle = (Bicycle) vc.addBicycle(idPark, wheelSize, 1, description, weight, aerodynamicCoefficient, frontalArea);</span>
+<span class="nc bnc" id="L49" title="All 2 branches missed.">                    if (bicycle.getId() != 0) {</span>
+<span class="nc" id="L50">                        count++;</span>
+                    }
+<span class="nc" id="L52">                }</span>
+            }
+<span class="nc" id="L54">            DataHandler.getInstance().getConnection().commit();</span>
+<span class="nc" id="L55">        } catch (SQLException e) {</span>
+<span class="nc" id="L56">            count = 0;</span>
+            try {
+<span class="nc" id="L58">                DataHandler.getInstance().getConnection().rollback();</span>
+<span class="nc" id="L59">            } catch (SQLException ex) {</span>
+<span class="nc" id="L60">                Logger.getLogger(Facade.class.getName()).log(Level.WARNING, ex.getMessage());</span>
+<span class="nc" id="L61">            }</span>
+<span class="nc" id="L62">            Logger.getLogger(Facade.class.getName()).log(Level.WARNING, e.getMessage());</span>
+<span class="nc" id="L63">        } catch (IOException e) {</span>
+<span class="nc" id="L64">            Logger.getLogger(Facade.class.getName()).log(Level.WARNING, e.getMessage());</span>
+        } finally {
+<span class="nc bnc" id="L66" title="All 2 branches missed.">            if (br != null) {</span>
+                try {
+<span class="nc" id="L68">                    br.close();</span>
+<span class="nc" id="L69">                } catch (IOException e) {</span>
+<span class="nc" id="L70">                    Logger.getLogger(Facade.class.getName()).log(Level.WARNING, e.getMessage());</span>
+<span class="nc" id="L71">                }</span>
+            }
+        }
+<span class="nc" id="L74">        return count;</span>
+    }
+
+    @Override
+    public int addEscooters(String s) {
+
+<span class="nc" id="L80">        BufferedReader br = null;</span>
+<span class="nc" id="L81">        String line = &quot;&quot;;</span>
+<span class="nc" id="L82">        String cvsSplitBy = &quot;;&quot;;</span>
+<span class="nc" id="L83">        VehicleController vc = new VehicleController(new VehicleDataHandler());</span>
+<span class="nc" id="L84">        ParkController pc = new ParkController(new ParkDataHandler());</span>
+<span class="nc" id="L85">        int count = 0;</span>
+        try {
+<span class="nc" id="L87">            DataHandler.getInstance().getConnection().setAutoCommit(false);</span>
+<span class="nc" id="L88">            br = new BufferedReader(new FileReader(s));</span>
+
+<span class="nc bnc" id="L90" title="All 2 branches missed.">            while ((line = br.readLine()) != null) {</span>
+<span class="nc bnc" id="L91" title="All 4 branches missed.">                if (!line.startsWith(&quot;#&quot;) &amp;&amp; !line.startsWith(&quot;escooter&quot;)) {</span>
+
+<span class="nc" id="L93">                    String[] escooterInfo = line.split(cvsSplitBy);</span>
+
+<span class="nc" id="L95">                    String description = escooterInfo[0].trim();</span>
+<span class="nc" id="L96">                    float weight = Float.parseFloat(escooterInfo[1]);</span>
+<span class="nc" id="L97">                    String escooterType = escooterInfo[2].trim();</span>
+<span class="nc" id="L98">                    double parkLatitude = Double.parseDouble(escooterInfo[3].trim());</span>
+<span class="nc" id="L99">                    double parkLongitude = Double.parseDouble(escooterInfo[4].trim());</span>
+<span class="nc" id="L100">                    float maxBateryCapacity = Float.parseFloat(escooterInfo[5].trim());</span>
+<span class="nc" id="L101">                    float actualBateryCapacity = Float.parseFloat(escooterInfo[6].trim());</span>
+<span class="nc" id="L102">                    float aerodynamicCoefficient = Float.parseFloat(escooterInfo[7].trim());</span>
+<span class="nc" id="L103">                    float frontalArea = Float.parseFloat(escooterInfo[8].trim());</span>
+<span class="nc" id="L104">                    int motor = Integer.parseInt(escooterInfo[9].trim());</span>
+<span class="nc" id="L105">                    int idPark = pc.getParkByCoordinates(parkLatitude, parkLongitude).getIdPoint();</span>
+
+<span class="nc" id="L107">                    int type = 0;</span>
+<span class="nc bnc" id="L108" title="All 2 branches missed.">                    if (escooterType.equalsIgnoreCase(&quot;city&quot;)) {</span>
+<span class="nc" id="L109">                        type = Scooter.SCOOTER_CITY_ID;</span>
+                    } else {
+<span class="nc" id="L111">                        type = Scooter.SCOOTER_OFF_ROAD_ID;</span>
+                    }
+<span class="nc" id="L113">                    Scooter scooter = (Scooter) vc.addScooter(idPark, type, (int) maxBateryCapacity, (int) actualBateryCapacity, motor, 1, description, weight, aerodynamicCoefficient, frontalArea);</span>
+<span class="nc bnc" id="L114" title="All 2 branches missed.">                    if (scooter.getId() != 0) {</span>
+<span class="nc" id="L115">                        count++;</span>
+                    }
+<span class="nc" id="L117">                }</span>
+
+            }
+<span class="nc" id="L120">            DataHandler.getInstance().getConnection().commit();</span>
+<span class="nc" id="L121">        } catch (SQLException e) {</span>
+<span class="nc" id="L122">            count = 0;</span>
+            try {
+
+<span class="nc" id="L125">                DataHandler.getInstance().getConnection().rollback();</span>
+<span class="nc" id="L126">            } catch (SQLException ex) {</span>
+<span class="nc" id="L127">                Logger.getLogger(Facade.class.getName()).log(Level.WARNING, ex.getMessage());</span>
+<span class="nc" id="L128">            }</span>
+<span class="nc" id="L129">            System.err.println(e.getMessage());</span>
+<span class="nc" id="L130">        } catch (IOException e) {</span>
+<span class="nc" id="L131">            Logger.getLogger(Facade.class.getName()).log(Level.WARNING, e.getMessage());</span>
+        } finally {
+<span class="nc bnc" id="L133" title="All 2 branches missed.">            if (br != null) {</span>
+                try {
+<span class="nc" id="L135">                    br.close();</span>
+<span class="nc" id="L136">                } catch (IOException e) {</span>
+<span class="nc" id="L137">                    Logger.getLogger(Facade.class.getName()).log(Level.WARNING, e.getMessage());</span>
+<span class="nc" id="L138">                }</span>
+            }
+        }
+<span class="nc" id="L141">        return count;</span>
+    }
+
+    @Override
+    public int addParks(String s) {
+<span class="nc" id="L146">        ParkController pc = new ParkController(new ParkDataHandler());</span>
+
+<span class="nc" id="L148">        BufferedReader br = null;</span>
+<span class="nc" id="L149">        String line = &quot;&quot;;</span>
+<span class="nc" id="L150">        String cvsSplitBy = &quot;;&quot;;</span>
+<span class="nc" id="L151">        int count = 0;</span>
+        try {
+<span class="nc" id="L153">            DataHandler.getInstance().getConnection().setAutoCommit(false);</span>
+<span class="nc" id="L154">            br = new BufferedReader(new FileReader(s));</span>
+<span class="nc bnc" id="L155" title="All 2 branches missed.">            while ((line = br.readLine()) != null) {</span>
+<span class="nc bnc" id="L156" title="All 4 branches missed.">                if (!line.startsWith(&quot;#&quot;) &amp;&amp; !line.startsWith(&quot;park identification&quot;)) {</span>
+<span class="nc" id="L157">                    String[] parkInfo = line.split(cvsSplitBy);</span>
+
+<span class="nc" id="L159">                    String parkIdentification = parkInfo[0].trim();</span>
+<span class="nc" id="L160">                    double parkLatitude = Double.parseDouble(parkInfo[1].trim());</span>
+<span class="nc" id="L161">                    double parkLongitude = Double.parseDouble(parkInfo[2].trim());</span>
+<span class="nc" id="L162">                    double parkElevation = 0;</span>
+<span class="nc bnc" id="L163" title="All 2 branches missed.">                    if (!parkInfo[3].equals(&quot; &quot;)) {</span>
+<span class="nc" id="L164">                        parkElevation = Double.parseDouble(parkInfo[3].trim());</span>
+                    }
+<span class="nc" id="L166">                    String parkDescription = parkInfo[4];</span>
+<span class="nc" id="L167">                    int maxBicycles = Integer.parseInt(parkInfo[5].trim());</span>
+<span class="nc" id="L168">                    int maxEscooters = Integer.parseInt(parkInfo[6].trim());</span>
+<span class="nc" id="L169">                    float parkVoltage = Float.parseFloat(parkInfo[7].trim());</span>
+<span class="nc" id="L170">                    float parkCurrent = Float.parseFloat(parkInfo[8].trim());</span>
+<span class="nc" id="L171">                    Park park = pc.addPark(parkIdentification, parkDescription, 1, (int) parkVoltage, (int) parkCurrent, parkLatitude, parkLongitude, parkElevation, maxBicycles, maxEscooters);</span>
+<span class="nc bnc" id="L172" title="All 2 branches missed.">                    if (park.getIdPoint() != 0) {</span>
+<span class="nc" id="L173">                        count++;</span>
+                    }
+<span class="nc" id="L175">                }</span>
+            }
+<span class="nc" id="L177">            DataHandler.getInstance().getConnection().commit();</span>
+<span class="nc" id="L178">        } catch (SQLException e) {</span>
+<span class="nc" id="L179">            count = 0;</span>
+            try {
+<span class="nc" id="L181">                DataHandler.getInstance().getConnection().rollback();</span>
+<span class="nc" id="L182">            } catch (SQLException ex) {</span>
+<span class="nc" id="L183">                Logger.getLogger(Facade.class.getName()).log(Level.WARNING, ex.getMessage());</span>
+<span class="nc" id="L184">            }</span>
+<span class="nc" id="L185">            System.err.println(e.getMessage());</span>
+<span class="nc" id="L186">        } catch (IOException e) {</span>
+<span class="nc" id="L187">            Logger.getLogger(Facade.class.getName()).log(Level.WARNING, e.getMessage());</span>
+        } finally {
+<span class="nc bnc" id="L189" title="All 2 branches missed.">            if (br != null) {</span>
+                try {
+<span class="nc" id="L191">                    br.close();</span>
+<span class="nc" id="L192">                } catch (IOException e) {</span>
+<span class="nc" id="L193">                    Logger.getLogger(Facade.class.getName()).log(Level.WARNING, e.getMessage());</span>
+<span class="nc" id="L194">                }</span>
+            }
+        }
+<span class="nc" id="L197">        return count;</span>
+
+    }
+
+    /**
+     * Reads Points of Interest and adds them to the database
+     *
+     * @param s file name
+     * @return amount of points of interest
+     */
+    @Override
+    public int addPOIs(String s) {
+
+<span class="nc" id="L210">        ParkController pc = new ParkController(new ParkDataHandler());</span>
+<span class="nc" id="L211">        BufferedReader br = null;</span>
+<span class="nc" id="L212">        String line = &quot;&quot;;</span>
+<span class="nc" id="L213">        int nrPOISadded = 0;</span>
+
+        try {
+<span class="nc" id="L216">            DataHandler.getInstance().getConnection().setAutoCommit(false);</span>
+<span class="nc" id="L217">            br = new BufferedReader(new FileReader(s));</span>
+
+<span class="nc bnc" id="L219" title="All 2 branches missed.">            while ((line = br.readLine()) != null) {</span>
+<span class="nc bnc" id="L220" title="All 4 branches missed.">                if (!line.startsWith(&quot;#&quot;) &amp;&amp; !line.startsWith(&quot;latitude&quot;)) {</span>
+<span class="nc" id="L221">                    String[] POIs = line.split(&quot;;&quot;);</span>
+
+<span class="nc" id="L223">                    double latitude = Double.parseDouble(POIs[0].trim());</span>
+<span class="nc" id="L224">                    double longitude = Double.parseDouble(POIs[1].trim());</span>
+<span class="nc" id="L225">                    double elevation = 0;</span>
+<span class="nc bnc" id="L226" title="All 2 branches missed.">                    if (!POIs[2].equals(&quot; &quot;)) {</span>
+<span class="nc" id="L227">                        elevation = Double.parseDouble(POIs[2].trim());</span>
+                    }
+<span class="nc" id="L229">                    String description = POIs[3];</span>
+<span class="nc" id="L230">                    PointInterest poi = pc.addPOI(latitude, longitude, elevation, description);</span>
+<span class="nc bnc" id="L231" title="All 2 branches missed.">                    if (poi.getIdPoint() != 0) {</span>
+<span class="nc" id="L232">                        nrPOISadded++;</span>
+                    }
+<span class="nc" id="L234">                }</span>
+            }
+<span class="nc" id="L236">            DataHandler.getInstance().getConnection().commit();</span>
+<span class="nc" id="L237">        } catch (SQLException e) {</span>
+<span class="nc" id="L238">            nrPOISadded = 0;</span>
+            try {
+<span class="nc" id="L240">                DataHandler.getInstance().getConnection().rollback();</span>
+<span class="nc" id="L241">            } catch (SQLException ex) {</span>
+<span class="nc" id="L242">                Logger.getLogger(Facade.class.getName()).log(Level.WARNING, ex.getMessage());</span>
+<span class="nc" id="L243">            }</span>
+<span class="nc" id="L244">            Logger.getLogger(Facade.class.getName()).log(Level.WARNING, e.getMessage());</span>
+<span class="nc" id="L245">        } catch (IOException e) {</span>
+<span class="nc" id="L246">            Logger.getLogger(Facade.class.getName()).log(Level.WARNING, e.getMessage());</span>
+        } finally {
+<span class="nc bnc" id="L248" title="All 2 branches missed.">            if (br != null) {</span>
+                try {
+<span class="nc" id="L250">                    br.close();</span>
+<span class="nc" id="L251">                } catch (IOException e) {</span>
+<span class="nc" id="L252">                    Logger.getLogger(Facade.class.getName()).log(Level.WARNING, e.getMessage());</span>
+<span class="nc" id="L253">                }</span>
+            }
+        }
+<span class="nc" id="L256">        return nrPOISadded;</span>
+    }
+
+    @Override
+    public int addUsers(String s) {
+<span class="nc" id="L261">        UserController uc = new UserController(new UserDataHandler());</span>
+
+<span class="nc" id="L263">        BufferedReader br = null;</span>
+<span class="nc" id="L264">        String line = &quot;&quot;;</span>
+<span class="nc" id="L265">        String cvsSplitBy = &quot;;&quot;;</span>
+<span class="nc" id="L266">        int count = 0;</span>
+        try {
+<span class="nc" id="L268">            DataHandler.getInstance().getConnection().setAutoCommit(false);</span>
+<span class="nc" id="L269">            br = new BufferedReader(new FileReader(s));</span>
+
+<span class="nc bnc" id="L271" title="All 2 branches missed.">            while ((line = br.readLine()) != null) {</span>
+<span class="nc bnc" id="L272" title="All 4 branches missed.">                if (!line.startsWith(&quot;#&quot;) &amp;&amp; !line.startsWith(&quot;username&quot;)) {</span>
+
+<span class="nc" id="L274">                    String[] userInfo = line.split(cvsSplitBy);</span>
+
+<span class="nc" id="L276">                    String username = userInfo[0].trim();</span>
+<span class="nc" id="L277">                    String email = userInfo[1].trim();</span>
+<span class="nc" id="L278">                    int height = Integer.parseInt(userInfo[2].trim());</span>
+<span class="nc" id="L279">                    Float weight = Float.parseFloat(userInfo[3].trim());</span>
+<span class="nc" id="L280">                    Float cyclingAverageSpeed = Float.parseFloat(userInfo[4].trim());</span>
+<span class="nc" id="L281">                    String creditCard = userInfo[5].trim();</span>
+<span class="nc" id="L282">                    String gender = userInfo[6].trim();</span>
+<span class="nc" id="L283">                    String pwd = userInfo[7].trim();</span>
+<span class="nc" id="L284">                    User user = uc.addUser(email, username, creditCard, cyclingAverageSpeed, height, weight, gender, pwd);</span>
+<span class="nc bnc" id="L285" title="All 2 branches missed.">                    if (user.getIdUser() != 0) {</span>
+<span class="nc" id="L286">                        count++;</span>
+                    }
+<span class="nc" id="L288">                }</span>
+            }
+<span class="nc" id="L290">            DataHandler.getInstance().getConnection().commit();</span>
+<span class="nc" id="L291">        } catch (SQLException e) {</span>
+<span class="nc" id="L292">            count = 0;</span>
+            try {
+<span class="nc" id="L294">                DataHandler.getInstance().getConnection().rollback();</span>
+<span class="nc" id="L295">            } catch (SQLException ex) {</span>
+<span class="nc" id="L296">                Logger.getLogger(Facade.class.getName()).log(Level.WARNING, ex.getMessage());</span>
+<span class="nc" id="L297">            }</span>
+<span class="nc" id="L298">            Logger.getLogger(Facade.class.getName()).log(Level.WARNING, e.getMessage());</span>
+<span class="nc" id="L299">        } catch (IOException e) {</span>
+<span class="nc" id="L300">            Logger.getLogger(Facade.class.getName()).log(Level.WARNING, e.getMessage());</span>
+        } finally {
+<span class="nc bnc" id="L302" title="All 2 branches missed.">            if (br != null) {</span>
+                try {
+<span class="nc" id="L304">                    br.close();</span>
+<span class="nc" id="L305">                } catch (IOException e) {</span>
+<span class="nc" id="L306">                    Logger.getLogger(Facade.class.getName()).log(Level.WARNING, e.getMessage());</span>
+<span class="nc" id="L307">                }</span>
+            }
+        }
+<span class="nc" id="L310">        return count;</span>
+    }
+
+    /**
+     * Add Paths to the system.
+     *
+     * @param s inputFile (Path to file that contains the Paths, according to
+     * file input/paths.csv) inputFile order: latitudeFrom, longitudeFrom,
+     * latitudeTo, longitudeTo, kineticCoefficient, windDirection, windSpeed
+     * @return the number of added Paths.
+     */
+    @Override
+    public int addPaths(String s) {
+<span class="nc" id="L323">        ParkController pc = new ParkController(new ParkDataHandler());</span>
+<span class="nc" id="L324">        BufferedReader br = null;</span>
+<span class="nc" id="L325">        String line = &quot;&quot;;</span>
+<span class="nc" id="L326">        int addedPaths = 0;</span>
+
+        try {
+<span class="nc" id="L329">            DataHandler.getInstance().getConnection().setAutoCommit(false);</span>
+<span class="nc" id="L330">            br = new BufferedReader(new FileReader(s));</span>
+
+<span class="nc bnc" id="L332" title="All 2 branches missed.">            while ((line = br.readLine()) != null) {</span>
+<span class="nc bnc" id="L333" title="All 4 branches missed.">                if (!line.startsWith(&quot;#&quot;) &amp;&amp; !line.startsWith(&quot;latitudeA&quot;)) {</span>
+<span class="nc" id="L334">                    String[] paths = line.split(&quot;;&quot;);</span>
+
+<span class="nc" id="L336">                    double latitudeFrom = Double.parseDouble(paths[0].trim());</span>
+<span class="nc" id="L337">                    double longitudeFrom = Double.parseDouble(paths[1].trim());</span>
+<span class="nc" id="L338">                    double latitudeTo = Double.parseDouble(paths[2].trim());</span>
+<span class="nc" id="L339">                    double longitudeTo = Double.parseDouble(paths[3].trim());</span>
+<span class="nc" id="L340">                    double kinetic = 0;</span>
+<span class="nc bnc" id="L341" title="All 2 branches missed.">                    if (!paths[4].equals(&quot; &quot;)) {</span>
+<span class="nc" id="L342">                        kinetic = Double.parseDouble(paths[4].trim());</span>
+                    }
+<span class="nc" id="L344">                    float windDirection = 0;</span>
+<span class="nc bnc" id="L345" title="All 2 branches missed.">                    if (!paths[5].equals(&quot; &quot;)) {</span>
+<span class="nc" id="L346">                        windDirection = Float.parseFloat(paths[5].trim());</span>
+                    }
+<span class="nc" id="L348">                    float windSpeed = 0;</span>
+<span class="nc bnc" id="L349" title="All 2 branches missed.">                    if (!paths[6].equals(&quot; &quot;)) {</span>
+<span class="nc" id="L350">                        windSpeed = Float.parseFloat(paths[6].trim());</span>
+                    }
+
+<span class="nc" id="L353">                    int idFrom = pc.getPointByCoordinates(latitudeFrom, longitudeFrom).getIdPoint();</span>
+<span class="nc" id="L354">                    int idTo = pc.getPointByCoordinates(latitudeTo, longitudeTo).getIdPoint();</span>
+<span class="nc" id="L355">                    boolean wasAdded = pc.addPath(idFrom, idTo, kinetic, windDirection, windSpeed);</span>
+<span class="nc bnc" id="L356" title="All 2 branches missed.">                    if (wasAdded == true) {</span>
+<span class="nc" id="L357">                        addedPaths++;</span>
+                    }
+<span class="nc" id="L359">                }</span>
+            }
+<span class="nc" id="L361">            DataHandler.getInstance().getConnection().commit();</span>
+<span class="nc" id="L362">        } catch (SQLException e) {</span>
+<span class="nc" id="L363">            addedPaths = 0;</span>
+            try {
+<span class="nc" id="L365">                DataHandler.getInstance().getConnection().rollback();</span>
+<span class="nc" id="L366">            } catch (SQLException ex) {</span>
+<span class="nc" id="L367">                Logger.getLogger(Facade.class.getName()).log(Level.WARNING, ex.getMessage());</span>
+<span class="nc" id="L368">            }</span>
+<span class="nc" id="L369">            Logger.getLogger(Facade.class.getName()).log(Level.WARNING, e.getMessage());</span>
+<span class="nc" id="L370">        } catch (IOException e) {</span>
+<span class="nc" id="L371">            Logger.getLogger(Facade.class.getName()).log(Level.WARNING, e.getMessage());</span>
+        } finally {
+<span class="nc bnc" id="L373" title="All 2 branches missed.">            if (br != null) {</span>
+                try {
+<span class="nc" id="L375">                    br.close();</span>
+<span class="nc" id="L376">                } catch (IOException e) {</span>
+<span class="nc" id="L377">                    Logger.getLogger(Facade.class.getName()).log(Level.WARNING, e.getMessage());</span>
+<span class="nc" id="L378">                }</span>
+            }
+        }
+<span class="nc" id="L381">        return addedPaths;</span>
+    }
+
+    @Override
+    public int getNumberOfBicyclesAtPark(double v, double v1, String s) {
+<span class="nc" id="L386">        VehicleController vc = new VehicleController(new VehicleDataHandler());</span>
+<span class="nc" id="L387">        ParkController pc = new ParkController(new ParkDataHandler());</span>
+<span class="nc" id="L388">        int idPark = pc.getParkByCoordinates(v, v1).getIdPoint();</span>
+<span class="nc" id="L389">        List&lt;Bicycle&gt; bicyclesOfPark = vc.getAllBicyclesOfPark(idPark);</span>
+
+<span class="nc" id="L391">        BufferedWriter writer = null;</span>
+
+        try {
+<span class="nc" id="L394">            writer = new BufferedWriter(new FileWriter(s));</span>
+<span class="nc" id="L395">            writer.write(&quot;bicycle description;wheel size&quot;);</span>
+
+<span class="nc bnc" id="L397" title="All 2 branches missed.">            for (Bicycle b : bicyclesOfPark) {</span>
+<span class="nc" id="L398">                writer.newLine();</span>
+<span class="nc" id="L399">                writer.write(b.getDescription() + &quot;;&quot; + b.getWheelSize());</span>
+
+<span class="nc" id="L401">            }</span>
+<span class="nc" id="L402">        } catch (IOException e) {</span>
+<span class="nc" id="L403">            Logger.getLogger(Facade.class.getName()).log(Level.WARNING, e.getMessage());</span>
+        } finally {
+            try {
+<span class="nc" id="L406">                writer.close();</span>
+<span class="nc" id="L407">            } catch (IOException | NullPointerException ex) {</span>
+<span class="nc" id="L408">                Logger.getLogger(Facade.class.getName()).log(Level.SEVERE, null, ex);</span>
+<span class="nc" id="L409">            }</span>
+        }
+<span class="nc" id="L411">        return bicyclesOfPark.size();</span>
+    }
+
+    /**
+     * Distance is returns in metres, rounded to the unit e.g. (281,58 rounds to
+     * 282);
+     *
+     * @param v Latitude in degrees.
+     * @param v1 Longitude in degrees.
+     * @param s Filename for output.
+     */
+    @Override
+    public void getNearestParks(double v, double v1, String s) {
+
+<span class="nc" id="L425">        BufferedWriter writer = null;</span>
+
+<span class="nc" id="L427">        ParkController pc = new ParkController(new ParkDataHandler());</span>
+
+<span class="nc" id="L429">        List&lt;Pair&lt;Double, Park&gt;&gt; nearestParks = new ArrayList&lt;&gt;();</span>
+
+        try {
+<span class="nc" id="L432">            writer = new BufferedWriter(new FileWriter(s));</span>
+<span class="nc" id="L433">            writer.write(&quot;latitude;longitude;distance in meters&quot;);</span>
+<span class="nc" id="L434">            nearestParks = pc.getNearestParks(v, v1, 1000);</span>
+
+<span class="nc bnc" id="L436" title="All 2 branches missed.">            for (Pair&lt;Double, Park&gt; p : nearestParks) {</span>
+<span class="nc" id="L437">                writer.newLine();</span>
+<span class="nc" id="L438">                writer.write(p.getValue().getGeoLocation().getLatitude() + &quot;;&quot; + p.getValue().getGeoLocation().getLongitude()</span>
+<span class="nc" id="L439">                        + &quot;;&quot; + (int) Math.round(p.getKey()));</span>
+<span class="nc" id="L440">            }</span>
+<span class="nc" id="L441">        } catch (IOException e) {</span>
+<span class="nc" id="L442">            Logger.getLogger(Facade.class.getName()).log(Level.WARNING, e.getMessage());</span>
+<span class="nc" id="L443">        } catch (ClassNotFoundException | SQLException ex) {</span>
+<span class="nc" id="L444">            Logger.getLogger(Facade.class.getName()).log(Level.SEVERE, null, ex);</span>
+        } finally {
+            try {
+<span class="nc" id="L447">                writer.close();</span>
+<span class="nc" id="L448">            } catch (IOException | NullPointerException ex) {</span>
+<span class="nc" id="L449">                Logger.getLogger(Facade.class.getName()).log(Level.SEVERE, null, ex);</span>
+<span class="nc" id="L450">            }</span>
+        }
+
+<span class="nc" id="L453">    }</span>
+
+    @Override
+    public int getNumberOfBicyclesAtPark(String string, String string1) {
+<span class="nc" id="L457">        VehicleController vc = new VehicleController(new VehicleDataHandler());</span>
+<span class="nc" id="L458">        ParkController pc = new ParkController(new ParkDataHandler());</span>
+<span class="nc" id="L459">        int idPark = pc.getParkByRefPark(string).getIdPoint();</span>
+<span class="nc" id="L460">        List&lt;Bicycle&gt; bicyclesOfPark = vc.getAllBicyclesOfPark(idPark);</span>
+
+<span class="nc" id="L462">        BufferedWriter writer = null;</span>
+
+        try {
+<span class="nc" id="L465">            writer = new BufferedWriter(new FileWriter(string1));</span>
+<span class="nc" id="L466">            writer.write(&quot;bicycle description;wheel size&quot;);</span>
+
+<span class="nc bnc" id="L468" title="All 2 branches missed.">            for (Bicycle b : bicyclesOfPark) {</span>
+<span class="nc" id="L469">                writer.newLine();</span>
+<span class="nc" id="L470">                writer.write(b.getDescription() + &quot;;&quot; + b.getWheelSize());</span>
+
+<span class="nc" id="L472">            }</span>
+<span class="nc" id="L473">        } catch (IOException e) {</span>
+<span class="nc" id="L474">            Logger.getLogger(Facade.class.getName()).log(Level.WARNING, e.getMessage());</span>
+        } finally {
+            try {
+<span class="nc" id="L477">                writer.close();</span>
+<span class="nc" id="L478">            } catch (IOException | NullPointerException ex) {</span>
+<span class="nc" id="L479">                Logger.getLogger(Facade.class.getName()).log(Level.SEVERE, null, ex);</span>
+<span class="nc" id="L480">            }</span>
+        }
+<span class="nc" id="L482">        return bicyclesOfPark.size();</span>
+    }
+
+    /**
+     * Remove a park from the system
+     *
+     * @param string park identification - park to be removed from the system
+     * @return the number of removed parks
+     */
+    @Override
+    public int removePark(String string) {
+<span class="nc" id="L493">        ParkController pc = new ParkController(new ParkDataHandler());</span>
+
+<span class="nc" id="L495">        int removedParks = 0;</span>
+<span class="nc" id="L496">        int parkId = pc.getParkByRefPark(string).getIdPoint();</span>
+
+        try {
+<span class="nc" id="L499">            DataHandler.getInstance().getConnection().setAutoCommit(false);</span>
+<span class="nc" id="L500">            boolean removal = pc.removePark(parkId);</span>
+<span class="nc" id="L501">            DataHandler.getInstance().getConnection().commit();</span>
+<span class="nc bnc" id="L502" title="All 2 branches missed.">            if (removal == true) {</span>
+<span class="nc" id="L503">                removedParks++;</span>
+            }
+<span class="nc" id="L505">        } catch (SQLException ex) {</span>
+            try {
+<span class="nc" id="L507">                DataHandler.getInstance().getConnection().rollback();</span>
+<span class="nc" id="L508">            } catch (SQLException e) {</span>
+<span class="nc" id="L509">                Logger.getLogger(Facade.class.getName()).log(Level.WARNING, e.getMessage());</span>
+<span class="nc" id="L510">            }</span>
+<span class="nc" id="L511">            Logger.getLogger(Facade.class.getName()).log(Level.WARNING, ex.getMessage());</span>
+<span class="nc" id="L512">        }</span>
+<span class="nc" id="L513">        return removedParks;</span>
+    }
+
+    @Override
+    public void getNearestParks(double d, double d1, String string, int i) {
+<span class="nc" id="L518">        BufferedWriter writer = null;</span>
+
+<span class="nc" id="L520">        ParkController pc = new ParkController(new ParkDataHandler());</span>
+
+<span class="nc" id="L522">        List&lt;Pair&lt;Double, Park&gt;&gt; nearestParks = new ArrayList&lt;&gt;();</span>
+
+        try {
+<span class="nc" id="L525">            writer = new BufferedWriter(new FileWriter(string));</span>
+<span class="nc" id="L526">            writer.write(&quot;latitude;longitude;distance in meters&quot;);</span>
+<span class="nc" id="L527">            nearestParks = pc.getNearestParks(d, d1, (double) i);</span>
+
+<span class="nc bnc" id="L529" title="All 2 branches missed.">            for (Pair&lt;Double, Park&gt; p : nearestParks) {</span>
+<span class="nc" id="L530">                writer.newLine();</span>
+<span class="nc" id="L531">                writer.write(p.getValue().getGeoLocation().getLatitude() + &quot;;&quot; + p.getValue().getGeoLocation().getLongitude()</span>
+<span class="nc" id="L532">                        + &quot;;&quot; + (int) Math.round(p.getKey()));</span>
+<span class="nc" id="L533">            }</span>
+<span class="nc" id="L534">        } catch (IOException e) {</span>
+<span class="nc" id="L535">            Logger.getLogger(Facade.class.getName()).log(Level.WARNING, e.getMessage());</span>
+<span class="nc" id="L536">        } catch (ClassNotFoundException | SQLException ex) {</span>
+<span class="nc" id="L537">            Logger.getLogger(Facade.class.getName()).log(Level.SEVERE, null, ex);</span>
+        } finally {
+            try {
+<span class="nc" id="L540">                writer.close();</span>
+<span class="nc" id="L541">            } catch (IOException | NullPointerException ex) {</span>
+<span class="nc" id="L542">                Logger.getLogger(Facade.class.getName()).log(Level.SEVERE, null, ex);</span>
+<span class="nc" id="L543">            }</span>
+        }
+
+<span class="nc" id="L546">    }</span>
+
+    @Override
+    public int getFreeBicycleSlotsAtPark(String string, String string1) {
+<span class="nc" id="L550">        ParkController pc = new ParkController(new ParkDataHandler());</span>
+        int freeBikeSpots;
+
+<span class="nc" id="L553">        int parkId = pc.getParkByRefPark(string).getIdPoint();</span>
+<span class="nc" id="L554">        freeBikeSpots = pc.checkParkFreeBicycleSpots(parkId);</span>
+
+<span class="nc" id="L556">        return freeBikeSpots;</span>
+    }
+
+    /**
+     * Gets the number of free scooter slots at a given park
+     *
+     * @param string park identification
+     * @param string1 username (unused)
+     * @return the number of free scooter slots
+     */
+    @Override
+    public int getFreeEscooterSlotsAtPark(String string, String string1) {
+
+<span class="nc" id="L569">        ParkController pc = new ParkController(new ParkDataHandler());</span>
+        int numberOfFreeSlots;
+
+<span class="nc" id="L572">        int parkId = pc.getParkByRefPark(string).getIdPoint();</span>
+<span class="nc" id="L573">        numberOfFreeSlots = pc.checkParkFreeScooterSpots(parkId);</span>
+
+<span class="nc" id="L575">        return numberOfFreeSlots;</span>
+    }
+
+    /**
+     * Gets the number of free slots for a given user
+     *
+     * @param string user's username
+     * @param string2 park identification
+     * @return the number of free slots of currently loaned vehicle
+     */
+    @Override
+    public int getFreeSlotsAtParkForMyLoanedVehicle(String string, String string2) {
+
+<span class="nc" id="L588">        ParkController pc = new ParkController(new ParkDataHandler());</span>
+<span class="nc" id="L589">        UserController uc = new UserController(new UserDataHandler());</span>
+
+<span class="nc" id="L591">        String parkIdentification = string2;</span>
+        int numberOfFreeSlots;
+
+<span class="nc" id="L594">        int parkId = pc.getParkByRefPark(parkIdentification).getIdPoint();</span>
+<span class="nc" id="L595">        User user = uc.getUserByUsername(string);</span>
+<span class="nc" id="L596">        int userId = user.getIdUser();</span>
+<span class="nc" id="L597">        numberOfFreeSlots = pc.checkParkFreeSpots(parkId, userId);</span>
+
+<span class="nc" id="L599">        return numberOfFreeSlots;</span>
+    }
+
+    @Override
+    public int linearDistanceTo(double d, double d1, double d2, double d3) {
+<span class="nc" id="L604">        return (int) Math.round(new PhysicsAlgorithms().calculateDistanceWithElevation(d, d2, d1, d3, 0, 0)) * 1000;</span>
+    }
+
+    /**
+     * gets the shortest path distance from one location to another.
+     *
+     * @param d origin latitude
+     * @param d1 origin longitude
+     * @param d2 destiny latitude
+     * @param d3 destiny longitude
+     * @return the distance in meters from one location to another
+     */
+    @Override
+    public int pathDistanceTo(double d, double d1, double d2, double d3) {
+<span class="nc" id="L618">        RentalController rc = new RentalController(new RentalDataHandler());</span>
+<span class="nc" id="L619">        ParkController pc = new ParkController(new ParkDataHandler());</span>
+
+<span class="nc" id="L621">        PointInterest origin = pc.getPointByCoordinates(d, d1);</span>
+<span class="nc" id="L622">        PointInterest destiny = pc.getPointByCoordinates(d2, d3);</span>
+
+<span class="nc" id="L624">        List&lt;Pair&lt;Double, List&lt;PointInterest&gt;&gt;&gt; shortestPaths = rc.shortestRoute(origin, destiny, 0);</span>
+
+<span class="nc" id="L626">        return shortestPaths.get(0).getKey().intValue();  //Key is the distance, values are the points the route passes through</span>
+    }
+
+    /**
+     * Unlocks a specific bicycle.
+     *
+     * @param string username that requested the unlock
+     * @param string1 bicycleDescription to unlock
+     * @return the time in milliseconds at which it was unlocked.
+     */
+    @Override
+    public long unlockBicycle(String string, String string1) {
+<span class="nc" id="L638">        RentalController rc = new RentalController(new RentalDataHandler());</span>
+<span class="nc" id="L639">        ParkController pc = new ParkController(new ParkDataHandler());</span>
+<span class="nc" id="L640">        UserController uc = new UserController(new UserDataHandler());</span>
+<span class="nc" id="L641">        VehicleController vc = new VehicleController(new VehicleDataHandler());</span>
+
+<span class="nc" id="L643">        String username = string1;</span>
+<span class="nc" id="L644">        String bicycleDescription = string;</span>
+
+<span class="nc" id="L646">        User user = uc.getUserByUsername(username);</span>
+<span class="nc" id="L647">        Vehicle vehicle = vc.getBicycleByDescription(bicycleDescription);</span>
+<span class="nc" id="L648">        Park park = pc.getParkByVehicleID(vehicle.getId());</span>
+
+        try {
+<span class="nc" id="L651">            DataHandler.getInstance().getConnection().setAutoCommit(false);</span>
+<span class="nc" id="L652">            Rental rental = rc.makeRental(user, vehicle, park);</span>
+<span class="nc" id="L653">            DataHandler.getInstance().getConnection().commit();</span>
+<span class="nc" id="L654">            return Long.parseLong(rental.getBeginDateHour());</span>
+<span class="nc" id="L655">        } catch (SQLException ex) {</span>
+            try {
+<span class="nc" id="L657">                DataHandler.getInstance().getConnection().rollback();</span>
+<span class="nc" id="L658">            } catch (SQLException e) {</span>
+<span class="nc" id="L659">                Logger.getLogger(Facade.class.getName()).log(Level.WARNING, e.getMessage());</span>
+<span class="nc" id="L660">            }</span>
+<span class="nc" id="L661">            Logger.getLogger(Facade.class.getName()).log(Level.WARNING, ex.getMessage());</span>
+        }
+<span class="nc" id="L663">        return 0;</span>
+    }
+
+    /**
+     * Unlocks a specific eScooter
+     *
+     * @param string username that requested the unlock
+     * @param string1 scooterDescription to unlock
+     * @return the time in milliseconds at which it was unlocked.
+     */
+    @Override
+    public long unlockEscooter(String string, String string1) {
+<span class="nc" id="L675">        RentalController rc = new RentalController(new RentalDataHandler());</span>
+<span class="nc" id="L676">        ParkController pc = new ParkController(new ParkDataHandler());</span>
+<span class="nc" id="L677">        UserController uc = new UserController(new UserDataHandler());</span>
+<span class="nc" id="L678">        VehicleController vc = new VehicleController(new VehicleDataHandler());</span>
+
+<span class="nc" id="L680">        String username = string;</span>
+<span class="nc" id="L681">        String scooterDescription = string1;</span>
+
+<span class="nc" id="L683">        User user = uc.getUserByUsername(username);</span>
+<span class="nc" id="L684">        Vehicle scooter = vc.getScooterByDescription(scooterDescription);</span>
+<span class="nc" id="L685">        Park park = pc.getParkByVehicleID(scooter.getId());</span>
+
+        try {
+<span class="nc" id="L688">            DataHandler.getInstance().getConnection().setAutoCommit(false);</span>
+<span class="nc" id="L689">            Rental rental = rc.makeRental(user, scooter, park);</span>
+<span class="nc" id="L690">            DataHandler.getInstance().getConnection().commit();</span>
+<span class="nc" id="L691">            return Long.parseLong(rental.getBeginDateHour());</span>
+<span class="nc" id="L692">        } catch (SQLException ex) {</span>
+            try {
+<span class="nc" id="L694">                DataHandler.getInstance().getConnection().rollback();</span>
+<span class="nc" id="L695">            } catch (SQLException e) {</span>
+<span class="nc" id="L696">                Logger.getLogger(Facade.class.getName()).log(Level.WARNING, e.getMessage());</span>
+<span class="nc" id="L697">            }</span>
+<span class="nc" id="L698">            Logger.getLogger(Facade.class.getName()).log(Level.WARNING, ex.getMessage());</span>
+        }
+<span class="nc" id="L700">        return 0;</span>
+    }
+
+    @Override
+    public long lockBicycle(String string, double d, double d1, String string1) {
+<span class="nc" id="L705">        ParkController pc = new ParkController(new ParkDataHandler());</span>
+<span class="nc" id="L706">        UserController uc = new UserController(new UserDataHandler());</span>
+<span class="nc" id="L707">        Park parkDestiny = pc.getParkByCoordinates(d, d1);</span>
+<span class="nc" id="L708">        User user = uc.getUserByUsername(string1);</span>
+
+        try {
+<span class="nc" id="L711">            DataHandler.getInstance().getConnection().setAutoCommit(false);</span>
+<span class="nc" id="L712">            pc.parkVehicle(parkDestiny.getIdPoint(), user.getIdUser());</span>
+<span class="nc" id="L713">            DataHandler.getInstance().getConnection().commit();</span>
+<span class="nc" id="L714">            return System.currentTimeMillis();</span>
+<span class="nc" id="L715">        } catch (SQLException ex) {</span>
+            try {
+<span class="nc" id="L717">                DataHandler.getInstance().getConnection().rollback();</span>
+<span class="nc" id="L718">            } catch (SQLException e) {</span>
+<span class="nc" id="L719">                Logger.getLogger(Facade.class.getName()).log(Level.WARNING, e.getMessage());</span>
+<span class="nc" id="L720">            }</span>
+<span class="nc" id="L721">            Logger.getLogger(Facade.class.getName()).log(Level.WARNING, ex.getMessage());</span>
+        }
+<span class="nc" id="L723">        return 0;</span>
+    }
+
+    @Override
+    public long lockBicycle(String string, String string1, String string2) {
+<span class="nc" id="L728">        ParkController pc = new ParkController(new ParkDataHandler());</span>
+<span class="nc" id="L729">        UserController uc = new UserController(new UserDataHandler());</span>
+<span class="nc" id="L730">        Park parkDestiny = pc.getParkByRefPark(string1);</span>
+<span class="nc" id="L731">        User user = uc.getUserByUsername(string2);</span>
+
+        try {
+<span class="nc" id="L734">            DataHandler.getInstance().getConnection().setAutoCommit(false);</span>
+<span class="nc" id="L735">            pc.parkVehicle(parkDestiny.getIdPoint(), user.getIdUser());</span>
+<span class="nc" id="L736">            DataHandler.getInstance().getConnection().commit();</span>
+<span class="nc" id="L737">            return System.currentTimeMillis();</span>
+<span class="nc" id="L738">        } catch (SQLException ex) {</span>
+            try {
+<span class="nc" id="L740">                DataHandler.getInstance().getConnection().rollback();</span>
+<span class="nc" id="L741">            } catch (SQLException e) {</span>
+<span class="nc" id="L742">                Logger.getLogger(Facade.class.getName()).log(Level.WARNING, e.getMessage());</span>
+<span class="nc" id="L743">            }</span>
+<span class="nc" id="L744">            Logger.getLogger(Facade.class.getName()).log(Level.WARNING, ex.getMessage());</span>
+        }
+<span class="nc" id="L746">        return 0;</span>
+    }
+
+    @Override
+    public long lockEscooter(String string, double d, double d1, String string1) {
+<span class="nc" id="L751">        return lockBicycle(string, d, d1, string1);</span>
+    }
+
+    @Override
+    public long lockEscooter(String string, String string1, String string2) {
+<span class="nc" id="L756">        return lockBicycle(string, string1, string2);</span>
+    }
+
+    /**
+     * Register a user on the system.
+     *
+     * @param string username
+     * @param string1 email
+     * @param string2 pwd
+     * @param string3 creditCard
+     * @param i height
+     * @param i1 weight
+     * @param bd cyclingAverageSpeed
+     * @param string4 gender
+     * @return 1 if a user is successfully registered, 0 if not.
+     */
+    @Override
+    public int registerUser(String string, String string1, String string2, String string3, int i, int i1, BigDecimal bd, String string4) {
+<span class="nc" id="L774">        UserController uc = new UserController(new UserDataHandler());</span>
+<span class="nc" id="L775">        String username = string;</span>
+<span class="nc" id="L776">        String email = string1;</span>
+<span class="nc" id="L777">        String pwd = string2;</span>
+<span class="nc" id="L778">        String creditCard = string3;</span>
+<span class="nc" id="L779">        int height = i;</span>
+<span class="nc" id="L780">        int weight = i1;</span>
+<span class="nc" id="L781">        float cyclingAverageSpeed = bd.floatValue();</span>
+<span class="nc" id="L782">        String gender = string4;</span>
+
+        try {
+<span class="nc" id="L785">            DataHandler.getInstance().getConnection().setAutoCommit(false);</span>
+<span class="nc" id="L786">            uc.addUser(email, username, creditCard, cyclingAverageSpeed, height, weight, gender, pwd);</span>
+<span class="nc" id="L787">            DataHandler.getInstance().getConnection().commit();</span>
+<span class="nc" id="L788">            return 1;</span>
+<span class="nc" id="L789">        } catch (SQLException ex) {</span>
+            try {
+<span class="nc" id="L791">                DataHandler.getInstance().getConnection().rollback();</span>
+<span class="nc" id="L792">            } catch (SQLException e) {</span>
+<span class="nc" id="L793">                Logger.getLogger(Facade.class.getName()).log(Level.WARNING, e.getMessage());</span>
+<span class="nc" id="L794">            }</span>
+<span class="nc" id="L795">            Logger.getLogger(Facade.class.getName()).log(Level.WARNING, ex.getMessage());</span>
+        }
+<span class="nc" id="L797">        return 0;</span>
+    }
+
+    /**
+     * Suggest escooters with enough energy + 10% to go from one Park to
+     * another.
+     *
+     * @param string parkRef where to unlock the scooter
+     * @param string1 username
+     * @param d destinationParkLatitudeInDegrees
+     * @param d1 destinationParkLongitudeInDegrees
+     * @param string2 outputFileName - Write the escooters information to a
+     * file, according to file output/escooters.csv
+     * @return the number of suggested vehicles
+     */
+    @Override
+    public int suggestEscootersToGoFromOneParkToAnother(String string, String string1, double d, double d1, String string2) {
+<span class="nc" id="L814">        RentalController rc = new RentalController(new RentalDataHandler());</span>
+<span class="nc" id="L815">        ParkController pc = new ParkController(new ParkDataHandler());</span>
+<span class="nc" id="L816">        UserController uc = new UserController(new UserDataHandler());</span>
+<span class="nc" id="L817">        int suggestedScooters = 0;</span>
+<span class="nc" id="L818">        Park origin = pc.getParkByRefPark(string);</span>
+<span class="nc" id="L819">        Park destination = pc.getParkByCoordinates(d, d1);</span>
+<span class="nc bnc" id="L820" title="All 4 branches missed.">        if (origin == null || destination == null) {</span>
+<span class="nc" id="L821">            return suggestedScooters;</span>
+        }
+<span class="nc" id="L823">        User u = uc.getUserByUsername(string1);</span>
+<span class="nc bnc" id="L824" title="All 2 branches missed.">        if (u == null) {</span>
+<span class="nc" id="L825">            return suggestedScooters;</span>
+        }
+<span class="nc" id="L827">        List&lt;Scooter&gt; scootersWith10PercentExtra = rc.getScootersWith10PercentageExtra(origin, destination, u);</span>
+<span class="nc bnc" id="L828" title="All 2 branches missed.">        if (scootersWith10PercentExtra.isEmpty()) {</span>
+<span class="nc" id="L829">            return suggestedScooters;</span>
+        }
+<span class="nc" id="L831">        BufferedWriter writer = null;</span>
+
+        try {
+<span class="nc" id="L834">            writer = new BufferedWriter(new FileWriter(string2));</span>
+<span class="nc" id="L835">            writer.write(&quot;escooter description;type;actual battery capacity&quot;);</span>
+
+<span class="nc bnc" id="L837" title="All 2 branches missed.">            for (Scooter s : scootersWith10PercentExtra) {</span>
+<span class="nc" id="L838">                writer.newLine();</span>
+
+<span class="nc" id="L840">                writer.write(s.getDescription() + &quot;;&quot; + s.getType() + &quot;;&quot; + s.getActualBatteryCapacity());</span>
+<span class="nc" id="L841">                suggestedScooters++;</span>
+<span class="nc" id="L842">            }</span>
+<span class="nc" id="L843">        } catch (IOException e) {</span>
+<span class="nc" id="L844">            Logger.getLogger(Facade.class.getName()).log(Level.WARNING, e.getMessage());</span>
+        } finally {
+            try {
+<span class="nc" id="L847">                writer.close();</span>
+<span class="nc" id="L848">            } catch (IOException | NullPointerException ex) {</span>
+<span class="nc" id="L849">                Logger.getLogger(Facade.class.getName()).log(Level.SEVERE, null, ex);</span>
+<span class="nc" id="L850">            }</span>
+        }
+<span class="nc" id="L852">        return suggestedScooters;</span>
+    }
+
+    /**
+     * Calculate the most energy efficient route from one park to another.
+     * Basic: Does not consider wind. Intermediate: Considers wind. Advanced:
+     * Considers the different mechanical and aerodynamic coefficients.
+     *
+     * @param string originParkIdentification,
+     * @param string1 destinationParkIdentification
+     * @param string2 typeOfVehicle - The type of vehicle required e.g.
+     * &quot;bicycle&quot; or &quot;escooter&quot;
+     * @param string3 vehicleSpecs - The specs for the vehicle e.g. &quot;16&quot;, &quot;19&quot;,
+     * &quot;27&quot; or any other number for bicyles and &quot;city&quot; or &quot;off-road&quot; for any
+     * escooter
+     * @param string4 username
+     * @param string5 outputFileName - Write to the file the Route between two
+     * parks according to file output/paths.csv. More than one path may exist.
+     * If so, sort routes by the ascending number of points between the parks
+     * and by ascending order of elevation difference.
+     * @return
+     */
+    @Override
+    public long mostEnergyEfficientRouteBetweenTwoParks(String string, String string1, String string2, String string3, String string4, String string5) {
+<span class="nc" id="L876">        RentalController rc = new RentalController(new RentalDataHandler());</span>
+<span class="nc" id="L877">        ParkController pc = new ParkController(new ParkDataHandler());</span>
+<span class="nc" id="L878">        VehicleController vc = new VehicleController(new VehicleDataHandler());</span>
+<span class="nc" id="L879">        UserController uc = new UserController(new UserDataHandler());</span>
+
+<span class="nc" id="L881">        int count = 1;</span>
+<span class="nc" id="L882">        List&lt;Pair&lt;Double, List&lt;PointInterest&gt;&gt;&gt; listOfRoutes = new ArrayList&lt;&gt;();</span>
+<span class="nc" id="L883">        Bicycle bicycle = null;</span>
+<span class="nc" id="L884">        Scooter scooterOffRoad = null;</span>
+<span class="nc" id="L885">        Scooter scooterCity = null;</span>
+<span class="nc" id="L886">        Park origin = pc.getParkByRefPark(string);</span>
+<span class="nc" id="L887">        Park destination = pc.getParkByRefPark(string1);</span>
+
+<span class="nc" id="L889">        BufferedWriter writer = null;</span>
+
+<span class="nc bnc" id="L891" title="All 4 branches missed.">        if (origin == null || destination == null) {</span>
+<span class="nc" id="L892">            return 0;</span>
+        }
+
+<span class="nc" id="L895">        PointInterest poiFrom = new PointInterest(origin.getIdPoint(), origin.getGeoLocation(), origin.getDescription());</span>
+<span class="nc" id="L896">        PointInterest poiTo = new PointInterest(destination.getIdPoint(), destination.getGeoLocation(), destination.getDescription());</span>
+<span class="nc" id="L897">        User u = uc.getUserByUsername(string4);</span>
+
+<span class="nc bnc" id="L899" title="All 2 branches missed.">        if (u == null) {</span>
+<span class="nc" id="L900">            return 0;</span>
+        }
+<span class="nc" id="L902">        int idUser = u.getIdUser();</span>
+
+<span class="nc bnc" id="L904" title="All 2 branches missed.">        if (string2.equalsIgnoreCase(&quot;bicycle&quot;)) {</span>
+<span class="nc" id="L905">            List&lt;Bicycle&gt; bicycles = vc.getAllBicyclesOfPark(poiFrom.getIdPoint());</span>
+<span class="nc bnc" id="L906" title="All 2 branches missed.">            for (Bicycle b : bicycles) {</span>
+<span class="nc bnc" id="L907" title="All 2 branches missed.">                if ((int) b.getWheelSize() == Integer.parseInt(string3)) {</span>
+<span class="nc" id="L908">                    bicycle = b;</span>
+                }
+<span class="nc" id="L910">            }</span>
+
+<span class="nc" id="L912">            listOfRoutes = rc.mostEnergeticallyEfficientRoute(idUser, bicycle, poiFrom, poiTo);</span>
+
+<span class="nc bnc" id="L914" title="All 2 branches missed.">        } else if (string2.equalsIgnoreCase(&quot;escooter&quot;)) {</span>
+<span class="nc" id="L915">            List&lt;Scooter&gt; scooters = vc.getAllScootersOfPark(poiFrom.getIdPoint());</span>
+<span class="nc bnc" id="L916" title="All 2 branches missed.">            for (Scooter s : scooters) {</span>
+<span class="nc bnc" id="L917" title="All 4 branches missed.">                if (string3.equalsIgnoreCase(&quot;off-road&quot;) &amp;&amp; s.getType() == 1) {</span>
+<span class="nc" id="L918">                    scooterOffRoad = s;</span>
+<span class="nc" id="L919">                    listOfRoutes = rc.mostEnergeticallyEfficientRoute(idUser, scooterOffRoad, poiFrom, poiTo);</span>
+<span class="nc bnc" id="L920" title="All 4 branches missed.">                } else if (string3.equalsIgnoreCase(&quot;city&quot;) &amp;&amp; s.getType() == 2) {</span>
+<span class="nc" id="L921">                    scooterCity = s;</span>
+<span class="nc" id="L922">                    listOfRoutes = rc.mostEnergeticallyEfficientRoute(idUser, scooterCity, poiFrom, poiTo);</span>
+                } else {
+<span class="nc" id="L924">                    return 0;</span>
+                }
+<span class="nc" id="L926">            }</span>
+<span class="nc" id="L927">        } else {</span>
+<span class="nc" id="L928">            return 0;</span>
+        }
+<span class="nc" id="L930">        double distance = 0;</span>
+        try {
+
+<span class="nc" id="L933">            writer = new BufferedWriter(new FileWriter(string5));</span>
+<span class="nc bnc" id="L934" title="All 2 branches missed.">            for (Pair&lt;Double, List&lt;PointInterest&gt;&gt; pair : listOfRoutes) {</span>
+
+<span class="nc bnc" id="L936" title="All 2 branches missed.">                for (int i = 0; i &lt; pair.getValue().size() - 1; i++) {</span>
+<span class="nc" id="L937">                    distance += PhysicsAlgorithms.calculateDistanceWithElevation(pair.getValue().get(i).getGeoLocation().getLatitude(),</span>
+<span class="nc" id="L938">                            pair.getValue().get(i + 1).getGeoLocation().getLatitude(), pair.getValue().get(i).getGeoLocation().getLongitude(),</span>
+<span class="nc" id="L939">                            pair.getValue().get(i + 1).getGeoLocation().getLongitude(), pair.getValue().get(i).getGeoLocation().getElevation(),</span>
+<span class="nc" id="L940">                            pair.getValue().get(i + 1).getGeoLocation().getElevation());</span>
+                }
+<span class="nc" id="L942">                double elevationDif = pair.getValue().get(0).getGeoLocation().getElevation() - pair.getValue().get(pair.getValue().size() - 1).getGeoLocation().getElevation();</span>
+
+<span class="nc" id="L944">                writer.newLine();</span>
+<span class="nc" id="L945">                writer.write(&quot;Path &quot; + String.format(&quot;%03d&quot;, count));</span>
+<span class="nc" id="L946">                writer.newLine();</span>
+<span class="nc" id="L947">                writer.write(&quot;total_distance: &quot; + distance);</span>
+<span class="nc" id="L948">                writer.newLine();</span>
+<span class="nc" id="L949">                writer.write(&quot;total_energy: &quot; + pair.getKey());</span>
+<span class="nc" id="L950">                writer.newLine();</span>
+<span class="nc" id="L951">                writer.write(&quot;elevation: &quot; + elevationDif);</span>
+
+<span class="nc bnc" id="L953" title="All 2 branches missed.">                for (PointInterest poi : pair.getValue()) {</span>
+<span class="nc" id="L954">                    writer.newLine();</span>
+<span class="nc" id="L955">                    writer.write(poi.getGeoLocation().getLatitude() + &quot;;&quot; + poi.getGeoLocation().getLongitude());</span>
+<span class="nc" id="L956">                    System.out.println(poi.getGeoLocation().getLongitude());</span>
+<span class="nc" id="L957">                }</span>
+<span class="nc" id="L958">                count++;</span>
+<span class="nc" id="L959">            }</span>
+<span class="nc" id="L960">        } catch (IOException e) {</span>
+<span class="nc" id="L961">            Logger.getLogger(Facade.class.getName()).log(Level.WARNING, e.getMessage());</span>
+        } finally {
+            try {
+<span class="nc" id="L964">                writer.close();</span>
+<span class="nc" id="L965">            } catch (IOException | NullPointerException ex) {</span>
+<span class="nc" id="L966">                Logger.getLogger(Facade.class.getName()).log(Level.SEVERE, null, ex);</span>
+<span class="nc" id="L967">            }</span>
+        }
+<span class="nc" id="L969">        return (long) distance;</span>
+    }
+
+    @Override
+    public int getNumberOfEscootersAtPark(double d, double d1, String string) {
+<span class="nc" id="L974">        VehicleController vc = new VehicleController(new VehicleDataHandler());</span>
+<span class="nc" id="L975">        ParkController pc = new ParkController(new ParkDataHandler());</span>
+<span class="nc" id="L976">        int idPark = pc.getParkByCoordinates(d, d1).getIdPoint();</span>
+<span class="nc" id="L977">        List&lt;Scooter&gt; scootersOfPark = vc.getAllScootersOfPark(idPark);</span>
+
+<span class="nc" id="L979">        BufferedWriter writer = null;</span>
+
+        try {
+<span class="nc" id="L982">            writer = new BufferedWriter(new FileWriter(string));</span>
+<span class="nc" id="L983">            writer.write(&quot;escooter description;type;actual battery capacity&quot;);</span>
+
+<span class="nc bnc" id="L985" title="All 2 branches missed.">            for (Scooter s : scootersOfPark) {</span>
+<span class="nc" id="L986">                writer.newLine();</span>
+                String scooterType;
+<span class="nc bnc" id="L988" title="All 2 branches missed.">                if (s.getType() == Scooter.SCOOTER_CITY_ID) {</span>
+<span class="nc" id="L989">                    scooterType = &quot;city&quot;;</span>
+                } else {
+<span class="nc" id="L991">                    scooterType = &quot;off-road&quot;;</span>
+                }
+<span class="nc" id="L993">                writer.write(s.getDescription() + &quot;;&quot; + scooterType + &quot;;&quot; + s.getActualBatteryCapacity());</span>
+
+<span class="nc" id="L995">            }</span>
+<span class="nc" id="L996">        } catch (IOException e) {</span>
+<span class="nc" id="L997">            Logger.getLogger(Facade.class.getName()).log(Level.WARNING, e.getMessage());</span>
+        } finally {
+            try {
+<span class="nc" id="L1000">                writer.close();</span>
+<span class="nc" id="L1001">            } catch (IOException | NullPointerException ex) {</span>
+<span class="nc" id="L1002">                Logger.getLogger(Facade.class.getName()).log(Level.SEVERE, null, ex);</span>
+<span class="nc" id="L1003">            }</span>
+        }
+<span class="nc" id="L1005">        return scootersOfPark.size();</span>
+    }
+
+    @Override
+    public int getNumberOfEScootersAtPark(String string, String string1) {
+<span class="nc" id="L1010">        VehicleController vc = new VehicleController(new VehicleDataHandler());</span>
+<span class="nc" id="L1011">        ParkController pc = new ParkController(new ParkDataHandler());</span>
+<span class="nc" id="L1012">        int idPark = pc.getParkByRefPark(string).getIdPoint();</span>
+<span class="nc" id="L1013">        List&lt;Scooter&gt; scootersOfPark = vc.getAllScootersOfPark(idPark);</span>
+
+<span class="nc" id="L1015">        BufferedWriter writer = null;</span>
+
+        try {
+<span class="nc" id="L1018">            writer = new BufferedWriter(new FileWriter(string1));</span>
+<span class="nc" id="L1019">            writer.write(&quot;escooter description;type;actual battery capacity&quot;);</span>
+
+<span class="nc bnc" id="L1021" title="All 2 branches missed.">            for (Scooter s : scootersOfPark) {</span>
+<span class="nc" id="L1022">                writer.newLine();</span>
+                String scooterType;
+<span class="nc bnc" id="L1024" title="All 2 branches missed.">                if (s.getType() == Scooter.SCOOTER_CITY_ID) {</span>
+<span class="nc" id="L1025">                    scooterType = &quot;city&quot;;</span>
+                } else {
+<span class="nc" id="L1027">                    scooterType = &quot;off-road&quot;;</span>
+                }
+<span class="nc" id="L1029">                writer.write(s.getDescription() + &quot;;&quot; + scooterType + &quot;;&quot; + s.getActualBatteryCapacity());</span>
+
+<span class="nc" id="L1031">            }</span>
+<span class="nc" id="L1032">        } catch (IOException e) {</span>
+<span class="nc" id="L1033">            Logger.getLogger(Facade.class.getName()).log(Level.WARNING, e.getMessage());</span>
+        } finally {
+            try {
+<span class="nc" id="L1036">                writer.close();</span>
+<span class="nc" id="L1037">            } catch (IOException | NullPointerException ex) {</span>
+<span class="nc" id="L1038">                Logger.getLogger(Facade.class.getName()).log(Level.SEVERE, null, ex);</span>
+<span class="nc" id="L1039">            }</span>
+        }
+<span class="nc" id="L1041">        return scootersOfPark.size();</span>
+    }
+
+    @Override
+    public long unlockAnyEscooterAtPark(String string, String string1, String string2) {
+<span class="nc" id="L1046">        ParkController pc = new ParkController(new ParkDataHandler());</span>
+<span class="nc" id="L1047">        UserController uc = new UserController(new UserDataHandler());</span>
+<span class="nc" id="L1048">        RentalController rc = new RentalController(new RentalDataHandler());</span>
+<span class="nc" id="L1049">        Park park = pc.getParkByRefPark(string);</span>
+<span class="nc" id="L1050">        List&lt;Scooter&gt; scootersOfPark = rc.getScootersWithMoreEnergy(park.getIdPoint());</span>
+<span class="nc" id="L1051">        Rental rental = null;</span>
+<span class="nc" id="L1052">        User user = uc.getUserByUsername(string1);</span>
+
+        try {
+<span class="nc" id="L1055">            DataHandler.getInstance().getConnection().setAutoCommit(false);</span>
+<span class="nc" id="L1056">            rental = rc.makeRental(user, scootersOfPark.get(0), park);</span>
+<span class="nc" id="L1057">            DataHandler.getInstance().getConnection().commit();</span>
+
+<span class="nc" id="L1059">        } catch (SQLException ex) {</span>
+            try {
+<span class="nc" id="L1061">                DataHandler.getInstance().getConnection().rollback();</span>
+<span class="nc" id="L1062">            } catch (SQLException e) {</span>
+<span class="nc" id="L1063">                Logger.getLogger(Facade.class.getName()).log(Level.WARNING, e.getMessage());</span>
+<span class="nc" id="L1064">            }</span>
+<span class="nc" id="L1065">            Logger.getLogger(Facade.class.getName()).log(Level.WARNING, ex.getMessage());</span>
+<span class="nc" id="L1066">        }</span>
+
+<span class="nc" id="L1068">        BufferedWriter writer = null;</span>
+
+        try {
+<span class="nc" id="L1071">            writer = new BufferedWriter(new FileWriter(string2));</span>
+<span class="nc" id="L1072">            writer.write(&quot;escooter description;type;actual battery capacity&quot;);</span>
+
+            
+<span class="nc" id="L1075">                writer.newLine();</span>
+                String scooterType;
+<span class="nc bnc" id="L1077" title="All 2 branches missed.">                if (scootersOfPark.get(0).getType() == Scooter.SCOOTER_CITY_ID) {</span>
+<span class="nc" id="L1078">                    scooterType = &quot;city&quot;;</span>
+                } else {
+<span class="nc" id="L1080">                    scooterType = &quot;off-road&quot;;</span>
+                }
+<span class="nc" id="L1082">                writer.write(scootersOfPark.get(0).getDescription() + &quot;;&quot; + scooterType + &quot;;&quot; + scootersOfPark.get(0).getActualBatteryCapacity());</span>
+
+          
+<span class="nc bnc" id="L1085" title="All 2 branches missed.">            if (rental != null) {</span>
+<span class="nc" id="L1086">                return Long.parseLong(rental.getBeginDateHour());</span>
+            }
+<span class="nc" id="L1088">        } catch (IOException e) {</span>
+<span class="nc" id="L1089">            Logger.getLogger(Facade.class.getName()).log(Level.WARNING, e.getMessage());</span>
+        } finally {
+            try {
+<span class="nc" id="L1092">                writer.close();</span>
+<span class="nc" id="L1093">            } catch (IOException | NullPointerException ex) {</span>
+<span class="nc" id="L1094">                Logger.getLogger(Facade.class.getName()).log(Level.SEVERE, null, ex);</span>
+<span class="nc" id="L1095">            }</span>
+        }
+<span class="nc" id="L1097">        return 0;</span>
+    }
+
+    @Override
+    public long unlockAnyEscooterAtParkForDestination(String string, String string1, double d, double d1, String string2) {
+<span class="nc" id="L1102">        ParkController pc = new ParkController(new ParkDataHandler());</span>
+<span class="nc" id="L1103">        UserController uc = new UserController(new UserDataHandler());</span>
+<span class="nc" id="L1104">        RentalController rc = new RentalController(new RentalDataHandler());</span>
+<span class="nc" id="L1105">        Park park1 = pc.getParkByRefPark(string);</span>
+<span class="nc" id="L1106">        Park park2 = pc.getParkByCoordinates(d, d1);</span>
+<span class="nc" id="L1107">        User user = uc.getUserByUsername(string1);</span>
+<span class="nc" id="L1108">        List&lt;Scooter&gt; scootersEnoughEnergy = rc.getScootersWith10PercentageExtra(park1, park2, user);</span>
+<span class="nc" id="L1109">        Rental rental = null;</span>
+        try {
+<span class="nc" id="L1111">            DataHandler.getInstance().getConnection().setAutoCommit(false);</span>
+<span class="nc" id="L1112">            rental = rc.makeRental(user, scootersEnoughEnergy.get(0), park1);</span>
+<span class="nc" id="L1113">            DataHandler.getInstance().getConnection().commit();</span>
+
+<span class="nc" id="L1115">        } catch (SQLException ex) {</span>
+            try {
+<span class="nc" id="L1117">                DataHandler.getInstance().getConnection().rollback();</span>
+<span class="nc" id="L1118">            } catch (SQLException e) {</span>
+<span class="nc" id="L1119">                Logger.getLogger(Facade.class.getName()).log(Level.WARNING, e.getMessage());</span>
+<span class="nc" id="L1120">            }</span>
+<span class="nc" id="L1121">            Logger.getLogger(Facade.class.getName()).log(Level.WARNING, ex.getMessage());</span>
+<span class="nc" id="L1122">        }</span>
+
+<span class="nc" id="L1124">        BufferedWriter writer = null;</span>
+
+        try {
+<span class="nc" id="L1127">            writer = new BufferedWriter(new FileWriter(string2));</span>
+<span class="nc" id="L1128">            writer.write(&quot;escooter description;type;actual battery capacity&quot;);</span>
+
+            
+<span class="nc" id="L1131">                writer.newLine();</span>
+                String scooterType;
+<span class="nc bnc" id="L1133" title="All 2 branches missed.">                if (scootersEnoughEnergy.get(0).getType() == Scooter.SCOOTER_CITY_ID) {</span>
+<span class="nc" id="L1134">                    scooterType = &quot;city&quot;;</span>
+                } else {
+<span class="nc" id="L1136">                    scooterType = &quot;off-road&quot;;</span>
+                }
+<span class="nc" id="L1138">                writer.write(scootersEnoughEnergy.get(0).getDescription() + &quot;;&quot; + scooterType + &quot;;&quot; + scootersEnoughEnergy.get(0).getActualBatteryCapacity());</span>
+
+            
+<span class="nc bnc" id="L1141" title="All 2 branches missed.">            if (rental != null) {</span>
+<span class="nc" id="L1142">                return Long.parseLong(rental.getBeginDateHour());</span>
+            }
+<span class="nc" id="L1144">        } catch (IOException e) {</span>
+<span class="nc" id="L1145">            Logger.getLogger(Facade.class.getName()).log(Level.WARNING, e.getMessage());</span>
+        } finally {
+            try {
+<span class="nc" id="L1148">                writer.close();</span>
+<span class="nc" id="L1149">            } catch (IOException | NullPointerException ex) {</span>
+<span class="nc" id="L1150">                Logger.getLogger(Facade.class.getName()).log(Level.SEVERE, null, ex);</span>
+<span class="nc" id="L1151">            }</span>
+        }
+<span class="nc" id="L1153">        return 0;</span>
+    }
+
+    /**
+     * Return the current debt for the user.
+     *
+     * @param string The username.
+     * @param string1 The path for the file to output the debt, according to
+     * file output/balance.csv. Sort the information by unlock time in ascending
+     * order (oldest to newest).
+     * @return The User's current debt in euros, rounded to two decimal places.
+     */
+    @Override
+    public double getUserCurrentDebt(String string, String string1) {
+<span class="nc" id="L1167">        UserController uc = new UserController(new UserDataHandler());</span>
+<span class="nc" id="L1168">        VehicleController vc = new VehicleController(new VehicleDataHandler());</span>
+<span class="nc" id="L1169">        RentalController rc = new RentalController(new RentalDataHandler());</span>
+
+<span class="nc" id="L1171">        User u = uc.getUserByUsername(string);</span>
+<span class="nc" id="L1172">        int currentDebt = 0;</span>
+<span class="nc bnc" id="L1173" title="All 2 branches missed.">        if (u == null) {</span>
+<span class="nc" id="L1174">            return currentDebt--; //-1 return because it's not correct to return 0 debt when the user doesn't even exists to begin with</span>
+        }
+<span class="nc" id="L1176">        TreeMap&lt;Long, InvoiceLine&gt; rentals = uc.getUnpaidRentals(u.getIdUser());</span>
+<span class="nc bnc" id="L1177" title="All 2 branches missed.">        if (rentals.isEmpty()) {</span>
+<span class="nc" id="L1178">            return currentDebt;</span>
+        }
+<span class="nc" id="L1180">        BufferedWriter writer = null;</span>
+
+        try {
+<span class="nc" id="L1183">            writer = new BufferedWriter(new FileWriter(string1));</span>
+<span class="nc" id="L1184">            writer.write(&quot;vehicleDescription;vehicleUnlockTime;vehicleLockTime;originParkLatitude;originParkLongitude;destinationParkLatitude;destinationParkLongitude;timeSpent;cost&quot;);</span>
+
+<span class="nc" id="L1186">            Set&lt;Long&gt; keys = rentals.keySet();</span>
+<span class="nc bnc" id="L1187" title="All 2 branches missed.">            for (Long key : keys) {</span>
+<span class="nc" id="L1188">                writer.newLine();</span>
+<span class="nc" id="L1189">                Rental rental = rc.getRentalById(rentals.get(key).getIdRental());</span>
+<span class="nc" id="L1190">                Vehicle vehicle = vc.getById(rentals.get(key).getIdVehicle());</span>
+<span class="nc" id="L1191">                writer.write(vehicle.getDescription() + &quot;;&quot; //vehicle description</span>
+<span class="nc" id="L1192">                        + rental.getBeginDateHour() + &quot;;&quot; //vehicle unlock Time</span>
+<span class="nc" id="L1193">                        + rental.getEndDateHour() + &quot;;&quot; //vehicle lock time</span>
+<span class="nc" id="L1194">                        + rental.getParkFrom().getGeoLocation().getLatitude() + &quot;;&quot; //originPark latitude</span>
+<span class="nc" id="L1195">                        + rental.getParkFrom().getGeoLocation().getLongitude() + &quot;;&quot; //originPark latitude</span>
+<span class="nc" id="L1196">                        + rental.getParkTo().getGeoLocation().getLatitude() + &quot;;&quot; //destinationPark latitude</span>
+<span class="nc" id="L1197">                        + rental.getParkTo().getGeoLocation().getLongitude() + &quot;;&quot; //destinationPark longitude</span>
+<span class="nc" id="L1198">                        + rental.getDuration() * 60 + &quot;;&quot; //duration (in seconds)</span>
+<span class="nc" id="L1199">                        + rental.getCost());                                  //cost</span>
+
+<span class="nc" id="L1201">            }</span>
+<span class="nc" id="L1202">        } catch (IOException e) {</span>
+<span class="nc" id="L1203">            Logger.getLogger(Facade.class.getName()).log(Level.WARNING, e.getMessage());</span>
+        } finally {
+            try {
+<span class="nc" id="L1206">                writer.close();</span>
+<span class="nc" id="L1207">            } catch (IOException | NullPointerException ex) {</span>
+<span class="nc" id="L1208">                Logger.getLogger(Facade.class.getName()).log(Level.SEVERE, null, ex);</span>
+<span class="nc" id="L1209">            }</span>
+        }
+<span class="nc" id="L1211">        return currentDebt;</span>
+    }
+
+    /**
+     * Return the current points for the user.
+     *
+     * @param string The user to get the points report from.
+     * @param string1 The path for the file to output the points, according to
+     * file output/points.csv. Sort the information by unlock time in ascending
+     * order (oldest to newest).
+     * @return The User's current points.
+     */
+    @Override
+    public double getUserCurrentPoints(String string, String string1) {
+<span class="nc" id="L1225">        UserController uc = new UserController(new UserDataHandler());</span>
+
+<span class="nc" id="L1227">        User u = uc.getUserByUsername(string);</span>
+<span class="nc" id="L1228">        List&lt;Rental&gt; rentalList = uc.getUserHistorical(u.getIdUser());</span>
+<span class="nc bnc" id="L1229" title="All 4 branches missed.">        if (u == null || rentalList.isEmpty()) {</span>
+<span class="nc" id="L1230">            return 0;</span>
+        }
+<span class="nc" id="L1232">        Collections.sort(rentalList);</span>
+
+<span class="nc" id="L1234">        BufferedWriter writer = null;</span>
+
+        try {
+<span class="nc" id="L1237">            writer = new BufferedWriter(new FileWriter(string1));</span>
+<span class="nc" id="L1238">            writer.write(&quot;vehicleDescription;vehicleUnlockTime;vehicleLockTime;originParkLatitude;originParkLongitude;originParkElevation;destinationParkLatitude;destinationParkLongitude;destinationParkElevation;elevationDifference;points&quot;);</span>
+
+<span class="nc bnc" id="L1240" title="All 2 branches missed.">            for (Rental rental : rentalList) {</span>
+<span class="nc" id="L1241">                writer.newLine();</span>
+
+<span class="nc" id="L1243">                writer.write(rental.getVehicle().getDescription() + &quot;;&quot;</span>
+<span class="nc" id="L1244">                        + rental.getBeginDateHour() + &quot;;&quot;</span>
+<span class="nc" id="L1245">                        + rental.getEndDateHour() + &quot;;&quot;</span>
+<span class="nc" id="L1246">                        + rental.getParkFrom().getGeoLocation().getLatitude() + &quot;;&quot;</span>
+<span class="nc" id="L1247">                        + rental.getParkFrom().getGeoLocation().getLongitude() + &quot;;&quot;</span>
+<span class="nc" id="L1248">                        + rental.getParkFrom().getGeoLocation().getElevation() + &quot;;&quot;</span>
+<span class="nc" id="L1249">                        + rental.getParkTo().getGeoLocation().getLatitude() + &quot;;&quot;</span>
+<span class="nc" id="L1250">                        + rental.getParkTo().getGeoLocation().getLongitude() + &quot;;&quot;</span>
+<span class="nc" id="L1251">                        + rental.getParkTo().getGeoLocation().getElevation() + &quot;;&quot;</span>
+<span class="nc" id="L1252">                        + Math.abs(rental.getParkTo().getGeoLocation().getElevation() - rental.getParkFrom().getGeoLocation().getElevation()) + &quot;;&quot;</span>
+<span class="nc" id="L1253">                        + rental.getEarnedPoints());</span>
+<span class="nc" id="L1254">            }</span>
+<span class="nc" id="L1255">        } catch (IOException e) {</span>
+<span class="nc" id="L1256">            Logger.getLogger(Facade.class.getName()).log(Level.WARNING, e.getMessage());</span>
+        } finally {
+            try {
+<span class="nc" id="L1259">                writer.close();</span>
+<span class="nc" id="L1260">            } catch (IOException | NullPointerException ex) {</span>
+<span class="nc" id="L1261">                Logger.getLogger(Facade.class.getName()).log(Level.SEVERE, null, ex);</span>
+<span class="nc" id="L1262">            }</span>
+        }
+<span class="nc" id="L1264">        return u.getPoints();</span>
+    }
+
+    /**
+     * Calculate the amount of electrical energy required to travel from one
+     * park to another
+     *
+     * @param d originLatitudeInDegrees
+     * @param d1 originLongitudeInDegrees
+     * @param d2 destinationLatitudeInDegrees
+     * @param d3 destinationLongitudeInDegrees
+     * @param string username
+     * @return the electrical energy required in kWh, rounded to two decimal
+     * places
+     */
+    @Override
+    public double calculateElectricalEnergyToTravelFromOneLocationToAnother(double d, double d1, double d2, double d3, String string) {
+<span class="nc" id="L1281">        RentalController rc = new RentalController(new RentalDataHandler());</span>
+<span class="nc" id="L1282">        ParkController pc = new ParkController(new ParkDataHandler());</span>
+<span class="nc" id="L1283">        UserController uc = new UserController(new UserDataHandler());</span>
+
+<span class="nc" id="L1285">        User user = uc.getUserByUsername(string);</span>
+<span class="nc bnc" id="L1286" title="All 2 branches missed.">        if (user == null) {</span>
+<span class="nc" id="L1287">            return 0;</span>
+        }
+<span class="nc" id="L1289">        int idUser = user.getIdUser();</span>
+<span class="nc" id="L1290">        Park origin = pc.getParkByCoordinates(d, d1);</span>
+<span class="nc" id="L1291">        Park destination = pc.getParkByCoordinates(d2, d3);</span>
+<span class="nc bnc" id="L1292" title="All 4 branches missed.">        if (origin == null || destination == null) {</span>
+<span class="nc" id="L1293">            return 0;</span>
+        }
+<span class="nc" id="L1295">        PointInterest originPOI = new PointInterest(origin.getId(), origin.getGeoLocation(), origin.getDescription());</span>
+<span class="nc" id="L1296">        PointInterest destinationPOI = new PointInterest(destination.getId(), destination.getGeoLocation(), destination.getDescription());</span>
+
+<span class="nc" id="L1298">        Scooter dummyVehicle = new Scooter(2, 100, 100, 250, 1, &quot;dummyVehicle&quot;, 12, 0.50, 0.3);   //type(city),maxBatteryCapacity,actualBattteryCapacity,motor,state,description,weight,aerodynamicCoefficient,frontalArea</span>
+
+<span class="nc" id="L1300">        List&lt;Pair&lt;Double, List&lt;PointInterest&gt;&gt;&gt; list = rc.mostEnergeticallyEfficientRoute(idUser, dummyVehicle, originPOI, destinationPOI);</span>
+<span class="nc bnc" id="L1301" title="All 2 branches missed.">        if (list.isEmpty()) {</span>
+<span class="nc" id="L1302">            return 0;</span>
+        } else {
+<span class="nc" id="L1304">            return Math.abs(list.get(0).getKey());</span>
+        }
+    }
+
+    /**
+     * Get for how long has a vehicle has been unlocked.
+     *
+     * @param string Vehicle description
+     * @return The time in seconds since the vehicle was unlocked.
+     */
+    @Override
+    public long forHowLongAVehicleIsUnlocked(String string) {
+<span class="nc" id="L1316">        VehicleController vc = new VehicleController(new VehicleDataHandler());</span>
+<span class="nc" id="L1317">        RentalController rc = new RentalController(new RentalDataHandler());</span>
+
+<span class="nc" id="L1319">        Vehicle vehicle = vc.getVehicleByDescription(string);</span>
+<span class="nc" id="L1320">        int timeUnlocked = 0;</span>
+
+<span class="nc bnc" id="L1322" title="All 2 branches missed.">        if (vehicle == null) {</span>
+<span class="nc" id="L1323">            return timeUnlocked;</span>
+        }
+<span class="nc" id="L1325">        int idVehicle = vehicle.getId();        //ID of the vehicle with the 'description' provided</span>
+<span class="nc" id="L1326">        List&lt;Rental&gt; unfinishedRentals = rc.getUnfinishedTrips();</span>
+<span class="nc bnc" id="L1327" title="All 2 branches missed.">        for (Rental r : unfinishedRentals) {</span>
+<span class="nc bnc" id="L1328" title="All 2 branches missed.">            if (r.getVehicle().getId() == idVehicle) {</span>
+<span class="nc" id="L1329">                return ((System.currentTimeMillis() - Long.parseLong(r.getBeginDateHour())) / 1000);</span>
+            }
+<span class="nc" id="L1331">        }</span>
+<span class="nc" id="L1332">        return timeUnlocked;</span>
+    }
+
+    @Override
+    public long shortestRouteBetweenTwoParks(double d, double d1, double d2, double d3, int i, String string) {
+<span class="nc" id="L1337">        ParkController pc = new ParkController(new ParkDataHandler());</span>
+<span class="nc" id="L1338">        RentalController rc = new RentalController(new RentalDataHandler());</span>
+<span class="nc" id="L1339">        Park park1 = pc.getParkByCoordinates(d, d1);</span>
+<span class="nc" id="L1340">        Park park2 = pc.getParkByCoordinates(d2, d3);</span>
+
+<span class="nc bnc" id="L1342" title="All 4 branches missed.">        if (park1 == null || park2 == null) {</span>
+<span class="nc" id="L1343">            return 0;</span>
+        }
+
+<span class="nc" id="L1346">        PointInterest poi1 = new PointInterest(park1.getIdPoint(), park1.getGeoLocation(), park1.getDescription());</span>
+<span class="nc" id="L1347">        PointInterest poi2 = new PointInterest(park2.getIdPoint(), park2.getGeoLocation(), park2.getDescription());</span>
+
+<span class="nc" id="L1349">        List&lt;Pair&lt;Double, List&lt;PointInterest&gt;&gt;&gt; shortestRoutes = rc.shortestRoute(poi1, poi2, i);</span>
+<span class="nc bnc" id="L1350" title="All 4 branches missed.">        if (shortestRoutes == null || shortestRoutes.isEmpty()) {</span>
+<span class="nc" id="L1351">            return 0;</span>
+        }
+
+<span class="nc" id="L1354">        BufferedWriter writer = null;</span>
+
+<span class="nc" id="L1356">        int num = 1;</span>
+
+        try {
+<span class="nc" id="L1359">            writer = new BufferedWriter(new FileWriter(string));</span>
+
+<span class="nc bnc" id="L1361" title="All 2 branches missed.">            for (Pair&lt;Double, List&lt;PointInterest&gt;&gt; pair : shortestRoutes) {</span>
+<span class="nc" id="L1362">                List&lt;Bicycle&gt; listBicycles = new VehicleController(new VehicleDataHandler()).getAllBicyclesOfPark(park1.getId());</span>
+<span class="nc" id="L1363">                List&lt;Scooter&gt; listScooters = new VehicleController(new VehicleDataHandler()).getAllScootersOfPark(park1.getId());</span>
+<span class="nc" id="L1364">                double smallerEnergyScooter = Double.MAX_VALUE;</span>
+<span class="nc bnc" id="L1365" title="All 2 branches missed.">                for (Scooter scooter : listScooters) {</span>
+<span class="nc" id="L1366">                    double energyScooter = 0;</span>
+<span class="nc bnc" id="L1367" title="All 2 branches missed.">                    for (int j = 0; j &lt; pair.getValue().size() - 1; j++) {</span>
+<span class="nc" id="L1368">                        Path path = new ParkController(new ParkDataHandler()).getPathByIdParks(pair.getValue().get(j).getIdPoint(), pair.getValue().get(j + 1).getIdPoint());</span>
+<span class="nc" id="L1369">                        energyScooter += new PhysicsAlgorithms().calculateEnergySpentBetweenPoints(scooter.getWeight(), 72,</span>
+<span class="nc" id="L1370">                                path.getKineticCoefficient(), scooter.getFrontalArea(), scooter.getAerodynamicCoefficient(),</span>
+<span class="nc" id="L1371">                                path.getWindSpeed(), path.getWindDirection(), pair.getValue().get(j).getGeoLocation().getElevation(),</span>
+<span class="nc" id="L1372">                                pair.getValue().get(j + 1).getGeoLocation().getElevation(), pair.getValue().get(j).getGeoLocation().getLatitude(),</span>
+<span class="nc" id="L1373">                                pair.getValue().get(j + 1).getGeoLocation().getLatitude(), pair.getValue().get(j).getGeoLocation().getLongitude(),</span>
+<span class="nc" id="L1374">                                pair.getValue().get(j + 1).getGeoLocation().getLongitude());</span>
+                    }
+<span class="nc bnc" id="L1376" title="All 2 branches missed.">                    if (energyScooter &lt; smallerEnergyScooter) {</span>
+<span class="nc" id="L1377">                        smallerEnergyScooter = energyScooter;</span>
+                    }
+<span class="nc" id="L1379">                }</span>
+
+<span class="nc" id="L1381">                double smallerEnergyBicycle = Double.MAX_VALUE;</span>
+<span class="nc bnc" id="L1382" title="All 2 branches missed.">                for (Bicycle bicycle : listBicycles) {</span>
+<span class="nc" id="L1383">                    double energyBicycle = 0;</span>
+<span class="nc bnc" id="L1384" title="All 2 branches missed.">                    for (int j = 0; j &lt; pair.getValue().size() - 1; j++) {</span>
+<span class="nc" id="L1385">                        Path path = new ParkController(new ParkDataHandler()).getPathByIdParks(pair.getValue().get(j).getIdPoint(), pair.getValue().get(j + 1).getIdPoint());</span>
+<span class="nc" id="L1386">                        energyBicycle += (new PhysicsAlgorithms().calculateCalories(bicycle.getWeight(), 72,</span>
+<span class="nc" id="L1387">                                path.getKineticCoefficient(), bicycle.getFrontalArea(), 3, bicycle.getAerodynamicCoefficient(),</span>
+<span class="nc" id="L1388">                                path.getWindSpeed(), path.getWindDirection(), pair.getValue().get(j).getGeoLocation().getElevation(),</span>
+<span class="nc" id="L1389">                                pair.getValue().get(j + 1).getGeoLocation().getElevation(), pair.getValue().get(j).getGeoLocation().getLatitude(),</span>
+<span class="nc" id="L1390">                                pair.getValue().get(j + 1).getGeoLocation().getLatitude(), pair.getValue().get(j).getGeoLocation().getLongitude(),</span>
+<span class="nc" id="L1391">                                pair.getValue().get(j + 1).getGeoLocation().getLongitude())) * 4.18;</span>
+                    }
+<span class="nc bnc" id="L1393" title="All 2 branches missed.">                    if (energyBicycle &lt; smallerEnergyBicycle) {</span>
+<span class="nc" id="L1394">                        smallerEnergyBicycle = energyBicycle;</span>
+                    }
+<span class="nc" id="L1396">                }</span>
+
+<span class="nc" id="L1398">                double totalEnergy = 0;</span>
+<span class="nc bnc" id="L1399" title="All 2 branches missed.">                if (smallerEnergyBicycle &lt; smallerEnergyScooter) {</span>
+<span class="nc" id="L1400">                    totalEnergy = smallerEnergyBicycle;</span>
+                } else {
+<span class="nc" id="L1402">                    totalEnergy = smallerEnergyScooter;</span>
+                }
+
+<span class="nc" id="L1405">                double elevationDif = pair.getValue().get(0).getGeoLocation().getElevation() - pair.getValue().get(pair.getValue().size() - 1).getGeoLocation().getElevation();</span>
+
+<span class="nc" id="L1407">                writer.write(&quot;Path &quot; + String.format(&quot;%03d&quot;, num));</span>
+<span class="nc" id="L1408">                writer.newLine();</span>
+<span class="nc" id="L1409">                writer.write(&quot;Total Distance:&quot; + pair.getKey());</span>
+<span class="nc" id="L1410">                writer.newLine();</span>
+<span class="nc" id="L1411">                writer.write(&quot;Total Energy:&quot; + totalEnergy);</span>
+<span class="nc" id="L1412">                writer.newLine();</span>
+<span class="nc" id="L1413">                writer.write(&quot;Elevation:&quot; + elevationDif);</span>
+<span class="nc bnc" id="L1414" title="All 2 branches missed.">                for (PointInterest poi : pair.getValue()) {</span>
+<span class="nc" id="L1415">                    writer.newLine();</span>
+<span class="nc" id="L1416">                    writer.write(poi.getGeoLocation().getLatitude() + &quot;;&quot; + poi.getGeoLocation().getLongitude());</span>
+<span class="nc" id="L1417">                }</span>
+<span class="nc" id="L1418">                num++;</span>
+<span class="nc" id="L1419">            }</span>
+<span class="nc" id="L1420">        } catch (IOException e) {</span>
+<span class="nc" id="L1421">            Logger.getLogger(Facade.class.getName()).log(Level.WARNING, e.getMessage());</span>
+        } finally {
+            try {
+<span class="nc" id="L1424">                writer.close();</span>
+<span class="nc" id="L1425">            } catch (IOException | NullPointerException ex) {</span>
+<span class="nc" id="L1426">                Logger.getLogger(Facade.class.getName()).log(Level.SEVERE, null, ex);</span>
+<span class="nc" id="L1427">            }</span>
+        }
+
+<span class="nc" id="L1430">        return shortestRoutes.get(0).getKey().intValue();</span>
+    }
+
+    @Override
+    public long shortestRouteBetweenTwoParks(String string, String string1, int i, String string2) {
+<span class="nc" id="L1435">        ParkController pc = new ParkController(new ParkDataHandler());</span>
+<span class="nc" id="L1436">        RentalController rc = new RentalController(new RentalDataHandler());</span>
+<span class="nc" id="L1437">        Park park1 = pc.getParkByRefPark(string);</span>
+<span class="nc" id="L1438">        Park park2 = pc.getParkByRefPark(string1);</span>
+
+<span class="nc" id="L1440">        return this.shortestRouteBetweenTwoParks(park1.getGeoLocation().getLatitude(), park1.getGeoLocation().getLongitude(),</span>
+<span class="nc" id="L1441">                park2.getGeoLocation().getLatitude(), park2.getGeoLocation().getLongitude(), i, string2);</span>
+    }
+
+    /**
+     * The user attributes are assumed because no user information is provided,
+     * and it is required in order to accurately calculate the spent energy in a
+     * route. And to have the required information for the output file.
+     */
+    @Override
+    public long shortestRouteBetweenTwoParksForGivenPOIs(String string, String string1, String string2, String string3) {
+        try {
+<span class="nc" id="L1452">            BufferedReader br = null;</span>
+<span class="nc" id="L1453">            String line = &quot;&quot;;</span>
+<span class="nc" id="L1454">            ParkController pc = new ParkController(new ParkDataHandler());</span>
+<span class="nc" id="L1455">            RentalController rc = new RentalController(new RentalDataHandler());</span>
+<span class="nc" id="L1456">            ArrayList&lt;PointInterest&gt; pois = new ArrayList&lt;&gt;();</span>
+            try {
+<span class="nc" id="L1458">                br = new BufferedReader(new FileReader(string2));</span>
+<span class="nc bnc" id="L1459" title="All 2 branches missed.">                while ((line = br.readLine()) != null) {</span>
+<span class="nc bnc" id="L1460" title="All 4 branches missed.">                    if (!line.startsWith(&quot;#&quot;) &amp;&amp; !line.startsWith(&quot;latitude&quot;)) {</span>
+<span class="nc" id="L1461">                        String[] POIs = line.split(&quot;;&quot;);</span>
+
+<span class="nc" id="L1463">                        double latitude = Double.parseDouble(POIs[0].trim());</span>
+<span class="nc" id="L1464">                        double longitude = Double.parseDouble(POIs[1].trim());</span>
+<span class="nc" id="L1465">                        PointInterest poi = pc.getPointByCoordinates(latitude, longitude);</span>
+<span class="nc bnc" id="L1466" title="All 2 branches missed.">                        if (poi == null) {</span>
+<span class="nc" id="L1467">                            return 0;</span>
+                        }
+<span class="nc" id="L1469">                        pois.add(poi);</span>
+<span class="nc" id="L1470">                    }</span>
+                }
+<span class="nc" id="L1472">            } catch (IOException ex) {</span>
+<span class="nc" id="L1473">                Logger.getLogger(Facade.class.getName()).log(Level.WARNING, ex.getMessage());</span>
+<span class="nc" id="L1474">            }</span>
+<span class="nc" id="L1475">            Park parkFrom = pc.getParkByRefPark(string);</span>
+<span class="nc" id="L1476">            Park parkTo = pc.getParkByRefPark(string1);</span>
+<span class="nc bnc" id="L1477" title="All 4 branches missed.">            if (parkFrom == null || parkTo == null) {</span>
+<span class="nc" id="L1478">                return 0;</span>
+            }
+
+<span class="nc" id="L1481">            PointInterest poi1 = new PointInterest(parkFrom.getIdPoint(), parkFrom.getGeoLocation(), parkFrom.getDescription());</span>
+<span class="nc" id="L1482">            PointInterest poi2 = new PointInterest(parkTo.getIdPoint(), parkTo.getGeoLocation(), parkTo.getDescription());</span>
+<span class="nc" id="L1483">            List&lt;Pair&lt;Double, List&lt;PointInterest&gt;&gt;&gt; shortestRoute = rc.shortestRoutePassingThroughPoints(poi1, poi2, pois);</span>
+<span class="nc bnc" id="L1484" title="All 2 branches missed.">            if (!shortestRoute.isEmpty()) {</span>
+<span class="nc" id="L1485">                int num = 1;</span>
+<span class="nc" id="L1486">                BufferedWriter writer = null;</span>
+                try {
+<span class="nc" id="L1488">                    writer = new BufferedWriter(new FileWriter(string3));</span>
+
+<span class="nc bnc" id="L1490" title="All 2 branches missed.">                    for (Pair&lt;Double, List&lt;PointInterest&gt;&gt; pair : shortestRoute) {</span>
+<span class="nc" id="L1491">                        List&lt;Bicycle&gt; listBicycles = new VehicleController(new VehicleDataHandler()).getAllBicyclesOfPark(parkFrom.getId());</span>
+<span class="nc" id="L1492">                        List&lt;Scooter&gt; listScooters = new VehicleController(new VehicleDataHandler()).getAllScootersOfPark(parkTo.getId());</span>
+<span class="nc" id="L1493">                        double smallerEnergyScooter = Double.MAX_VALUE;</span>
+<span class="nc bnc" id="L1494" title="All 2 branches missed.">                        for (Scooter scooter : listScooters) {</span>
+<span class="nc" id="L1495">                            double energyScooter = 0;</span>
+<span class="nc bnc" id="L1496" title="All 2 branches missed.">                            for (int j = 0; j &lt; pair.getValue().size() - 1; j++) {</span>
+<span class="nc" id="L1497">                                Path path = new ParkController(new ParkDataHandler()).getPathByIdParks(pair.getValue().get(j).getIdPoint(), pair.getValue().get(j + 1).getIdPoint());</span>
+<span class="nc" id="L1498">                                energyScooter += new PhysicsAlgorithms().calculateEnergySpentBetweenPoints(scooter.getWeight(), 72,</span>
+<span class="nc" id="L1499">                                        path.getKineticCoefficient(), scooter.getFrontalArea(), scooter.getAerodynamicCoefficient(),</span>
+<span class="nc" id="L1500">                                        path.getWindSpeed(), path.getWindDirection(), pair.getValue().get(j).getGeoLocation().getElevation(),</span>
+<span class="nc" id="L1501">                                        pair.getValue().get(j + 1).getGeoLocation().getElevation(), pair.getValue().get(j).getGeoLocation().getLatitude(),</span>
+<span class="nc" id="L1502">                                        pair.getValue().get(j + 1).getGeoLocation().getLatitude(), pair.getValue().get(j).getGeoLocation().getLongitude(),</span>
+<span class="nc" id="L1503">                                        pair.getValue().get(j + 1).getGeoLocation().getLongitude());</span>
+                            }
+<span class="nc bnc" id="L1505" title="All 2 branches missed.">                            if (energyScooter &lt; smallerEnergyScooter) {</span>
+<span class="nc" id="L1506">                                smallerEnergyScooter = energyScooter;</span>
+                            }
+<span class="nc" id="L1508">                        }</span>
+
+<span class="nc" id="L1510">                        double smallerEnergyBicycle = Double.MAX_VALUE;</span>
+<span class="nc bnc" id="L1511" title="All 2 branches missed.">                        for (Bicycle bicycle : listBicycles) {</span>
+<span class="nc" id="L1512">                            double energyBicycle = 0;</span>
+<span class="nc bnc" id="L1513" title="All 2 branches missed.">                            for (int j = 0; j &lt; pair.getValue().size() - 1; j++) {</span>
+<span class="nc" id="L1514">                                Path path = new ParkController(new ParkDataHandler()).getPathByIdParks(pair.getValue().get(j).getIdPoint(), pair.getValue().get(j + 1).getIdPoint());</span>
+<span class="nc" id="L1515">                                energyBicycle += (new PhysicsAlgorithms().calculateCalories(bicycle.getWeight(), 72,</span>
+<span class="nc" id="L1516">                                        path.getKineticCoefficient(), bicycle.getFrontalArea(), 3, bicycle.getAerodynamicCoefficient(),</span>
+<span class="nc" id="L1517">                                        path.getWindSpeed(), path.getWindDirection(), pair.getValue().get(j).getGeoLocation().getElevation(),</span>
+<span class="nc" id="L1518">                                        pair.getValue().get(j + 1).getGeoLocation().getElevation(), pair.getValue().get(j).getGeoLocation().getLatitude(),</span>
+<span class="nc" id="L1519">                                        pair.getValue().get(j + 1).getGeoLocation().getLatitude(), pair.getValue().get(j).getGeoLocation().getLongitude(),</span>
+<span class="nc" id="L1520">                                        pair.getValue().get(j + 1).getGeoLocation().getLongitude())) * 4.18;</span>
+                            }
+<span class="nc bnc" id="L1522" title="All 2 branches missed.">                            if (energyBicycle &lt; smallerEnergyBicycle) {</span>
+<span class="nc" id="L1523">                                smallerEnergyBicycle = energyBicycle;</span>
+                            }
+<span class="nc" id="L1525">                        }</span>
+
+<span class="nc" id="L1527">                        double totalEnergy = 0;</span>
+<span class="nc bnc" id="L1528" title="All 2 branches missed.">                        if (smallerEnergyBicycle &lt; smallerEnergyScooter) {</span>
+<span class="nc" id="L1529">                            totalEnergy = smallerEnergyBicycle;</span>
+                        } else {
+<span class="nc" id="L1531">                            totalEnergy = smallerEnergyScooter;</span>
+                        }
+
+<span class="nc" id="L1534">                        double elevationDif = pair.getValue().get(0).getGeoLocation().getElevation() - pair.getValue().get(pair.getValue().size() - 1).getGeoLocation().getElevation();</span>
+
+<span class="nc" id="L1536">                        writer.write(&quot;Path &quot; + String.format(&quot;%03d&quot;, num));</span>
+<span class="nc" id="L1537">                        writer.newLine();</span>
+<span class="nc" id="L1538">                        writer.write(&quot;Total Distance:&quot; + pair.getKey());</span>
+<span class="nc" id="L1539">                        writer.newLine();</span>
+<span class="nc" id="L1540">                        writer.write(&quot;Total Energy:&quot; + totalEnergy);</span>
+<span class="nc" id="L1541">                        writer.newLine();</span>
+<span class="nc" id="L1542">                        writer.write(&quot;Elevation:&quot; + elevationDif);</span>
+<span class="nc" id="L1543">                        writer.newLine();</span>
+<span class="nc bnc" id="L1544" title="All 2 branches missed.">                        for (PointInterest poi : pair.getValue()) {</span>
+<span class="nc" id="L1545">                            writer.newLine();</span>
+<span class="nc" id="L1546">                            writer.write(poi.getGeoLocation().getLatitude() + &quot;;&quot; + poi.getGeoLocation().getLongitude());</span>
+<span class="nc" id="L1547">                        }</span>
+<span class="nc" id="L1548">                        num++;</span>
+<span class="nc" id="L1549">                    }</span>
+
+<span class="nc" id="L1551">                } catch (IOException e) {</span>
+<span class="nc" id="L1552">                    Logger.getLogger(Facade.class.getName()).log(Level.WARNING, e.getMessage());</span>
+                } finally {
+                    try {
+<span class="nc" id="L1555">                        writer.close();</span>
+<span class="nc" id="L1556">                    } catch (IOException | NullPointerException ex) {</span>
+<span class="nc" id="L1557">                        Logger.getLogger(Facade.class.getName()).log(Level.SEVERE, null, ex);</span>
+<span class="nc" id="L1558">                    }</span>
+                }
+
+<span class="nc" id="L1561">                return shortestRoute.get(0).getKey().longValue();</span>
+            }
+<span class="nc" id="L1563">            return 0;</span>
+<span class="nc" id="L1564">        } catch (SQLException ex) {</span>
+<span class="nc" id="L1565">            Logger.getLogger(Facade.class.getName()).log(Level.SEVERE, null, ex);</span>
+        }
+<span class="nc" id="L1567">        return 0;</span>
+    }
+
+    @Override
+    public long shortestRouteBetweenTwoParksForGivenPOIs(double d, double d1, double d2, double d3, String string, String string1) {
+<span class="nc" id="L1572">        ParkController pc = new ParkController(new ParkDataHandler());</span>
+<span class="nc" id="L1573">        Park parkFrom = pc.getParkByCoordinates(d, d1);</span>
+<span class="nc" id="L1574">        Park parkTo = pc.getParkByCoordinates(d2, d3);</span>
+<span class="nc bnc" id="L1575" title="All 4 branches missed.">        if (parkFrom == null || parkTo == null) {</span>
+<span class="nc" id="L1576">            return 0;</span>
+        }
+<span class="nc" id="L1578">        return shortestRouteBetweenTwoParksForGivenPOIs(parkFrom.getRefPark(), parkTo.getRefPark(), string, string1);</span>
+    }
+
+    @Override
+    public long getParkChargingReport(String string, String string1) {
+<span class="nc" id="L1583">        VehicleController vc = new VehicleController(new VehicleDataHandler());</span>
+<span class="nc" id="L1584">        ParkController pc = new ParkController(new ParkDataHandler());</span>
+<span class="nc" id="L1585">        Park park = pc.getParkByRefPark(string);</span>
+<span class="nc" id="L1586">        List&lt;Scooter&gt; scooters = vc.getAllScootersOfPark(park.getIdPoint());</span>
+<span class="nc" id="L1587">        List&lt;Pair&lt;Integer, Scooter&gt;&gt; lowerBatery = new ArrayList&lt;&gt;();</span>
+<span class="nc bnc" id="L1588" title="All 2 branches missed.">        for (Scooter scooter : scooters) {</span>
+<span class="nc bnc" id="L1589" title="All 2 branches missed.">            if (scooter.getActualBatteryCapacity() &lt; 100) {</span>
+<span class="nc" id="L1590">                Pair&lt;Scooter, Double&gt; pair = pc.calculateTimeNeededToChargeTotalyByScooter(park.getIdPoint(), scooter.getDescription());</span>
+<span class="nc" id="L1591">                lowerBatery.add(new Pair(pair.getValue().intValue(), pair.getKey()));</span>
+            }
+<span class="nc" id="L1593">        }</span>
+
+<span class="nc" id="L1595">        lowerBatery.sort(new Comparator&lt;Pair&lt;Integer, Scooter&gt;&gt;() {</span>
+            @Override
+            public int compare(Pair&lt;Integer, Scooter&gt; o1, Pair&lt;Integer, Scooter&gt; o2) {
+<span class="nc bnc" id="L1598" title="All 2 branches missed.">                if (o1.getKey().compareTo(o2.getKey()) &gt; 0) {</span>
+<span class="nc" id="L1599">                    return -1;</span>
+                }
+<span class="nc bnc" id="L1601" title="All 2 branches missed.">                if (o1.getKey().compareTo(o2.getKey()) &lt; 0) {</span>
+<span class="nc" id="L1602">                    return 1;</span>
+                }
+<span class="nc" id="L1604">                return o1.getValue().getDescription().compareTo(o1.getValue().getDescription());</span>
+            }
+        });
+
+<span class="nc" id="L1608">        BufferedWriter writer = null;</span>
+        try {
+
+<span class="nc" id="L1611">            writer = new BufferedWriter(new FileWriter(string1));</span>
+
+<span class="nc" id="L1613">            writer.write(&quot;escooter description;type;actual battery capacity;time to finish charge in seconds&quot;);</span>
+
+<span class="nc bnc" id="L1615" title="All 2 branches missed.">            for (Pair&lt;Integer, Scooter&gt; chargeInfo : lowerBatery) {</span>
+<span class="nc" id="L1616">                writer.newLine();</span>
+                String scooterType;
+<span class="nc bnc" id="L1618" title="All 2 branches missed.">                if (chargeInfo.getValue().getType() == Scooter.SCOOTER_CITY_ID) {</span>
+<span class="nc" id="L1619">                    scooterType = &quot;city&quot;;</span>
+                } else {
+<span class="nc" id="L1621">                    scooterType = &quot;off-road&quot;;</span>
+                }
+<span class="nc" id="L1623">                writer.write(chargeInfo.getValue().getDescription() + &quot;;&quot; + scooterType</span>
+<span class="nc" id="L1624">                        + &quot;;&quot; + chargeInfo.getValue().getActualBatteryCapacity() + &quot;;&quot;</span>
+<span class="nc" id="L1625">                        + chargeInfo.getKey().doubleValue());</span>
+<span class="nc" id="L1626">            }</span>
+
+<span class="nc" id="L1628">        } catch (IOException e) {</span>
+<span class="nc" id="L1629">            Logger.getLogger(Facade.class.getName()).log(Level.WARNING, e.getMessage());</span>
+        } finally {
+            try {
+<span class="nc" id="L1632">                writer.close();</span>
+<span class="nc" id="L1633">            } catch (IOException | NullPointerException ex) {</span>
+<span class="nc" id="L1634">                Logger.getLogger(Facade.class.getName()).log(Level.SEVERE, null, ex);</span>
+<span class="nc" id="L1635">            }</span>
+        }
+<span class="nc bnc" id="L1637" title="All 2 branches missed.">        if (!lowerBatery.isEmpty()) {</span>
+<span class="nc" id="L1638">            return lowerBatery.size();</span>
+        }
+<span class="nc" id="L1640">        return 0;</span>
+    }
+
+    @Override
+    public int suggestRoutesBetweenTwoLocations(String string, String string1, String string2, String string3, String string4, int i, boolean bln, String string5, String string6, String string7) {
+<span class="nc" id="L1645">        ParkController pc = new ParkController(new ParkDataHandler());</span>
+<span class="nc" id="L1646">        VehicleController vc = new VehicleController(new VehicleDataHandler());</span>
+<span class="nc" id="L1647">        UserController uc = new UserController(new UserDataHandler());</span>
+<span class="nc" id="L1648">        RentalController rc = new RentalController(new RentalDataHandler());</span>
+<span class="nc" id="L1649">        BufferedReader br = null;</span>
+<span class="nc" id="L1650">        BufferedWriter writer = null;</span>
+<span class="nc" id="L1651">        int count = 1;</span>
+<span class="nc" id="L1652">        String line = &quot;&quot;;</span>
+<span class="nc" id="L1653">        ArrayList&lt;PointInterest&gt; pois = new ArrayList&lt;&gt;();</span>
+<span class="nc" id="L1654">        List&lt;Pair&lt;Double, List&lt;PointInterest&gt;&gt;&gt; listOfRoutes = new ArrayList&lt;&gt;();</span>
+<span class="nc" id="L1655">        Bicycle bicycle = null;</span>
+<span class="nc" id="L1656">        Scooter scooter = null;</span>
+<span class="nc" id="L1657">        Park parkFrom = pc.getParkByRefPark(string);</span>
+<span class="nc" id="L1658">        Park parkTo = pc.getParkByRefPark(string1);</span>
+<span class="nc" id="L1659">        PointInterest poiFrom = new PointInterest(parkFrom.getIdPoint(), parkFrom.getGeoLocation(), parkFrom.getDescription());</span>
+<span class="nc" id="L1660">        PointInterest poiTo = new PointInterest(parkTo.getIdPoint(), parkTo.getGeoLocation(), parkTo.getDescription());</span>
+<span class="nc" id="L1661">        User user = uc.getUserByUsername(string4);</span>
+
+<span class="nc bnc" id="L1663" title="All 6 branches missed.">        if (parkFrom == null || parkTo == null || user == null) {</span>
+<span class="nc" id="L1664">            return 0;</span>
+        }
+
+        try {
+<span class="nc" id="L1668">            br = new BufferedReader(new FileReader(string6));</span>
+<span class="nc bnc" id="L1669" title="All 2 branches missed.">            while ((line = br.readLine()) != null) {</span>
+<span class="nc bnc" id="L1670" title="All 4 branches missed.">                if (!line.startsWith(&quot;#&quot;) &amp;&amp; !line.startsWith(&quot;latitude&quot;)) {</span>
+<span class="nc" id="L1671">                    String[] POIs = line.split(&quot;;&quot;);</span>
+
+<span class="nc" id="L1673">                    double latitude = Double.parseDouble(POIs[0].trim());</span>
+<span class="nc" id="L1674">                    double longitude = Double.parseDouble(POIs[1].trim());</span>
+<span class="nc" id="L1675">                    PointInterest poi = pc.getPointByCoordinates(latitude, longitude);</span>
+<span class="nc bnc" id="L1676" title="All 2 branches missed.">                    if (poi == null) {</span>
+<span class="nc" id="L1677">                        return 0;</span>
+                    }
+<span class="nc" id="L1679">                    pois.add(poi);</span>
+<span class="nc" id="L1680">                }</span>
+            }
+<span class="nc" id="L1682">        } catch (IOException ex) {</span>
+<span class="nc" id="L1683">            Logger.getLogger(Facade.class.getName()).log(Level.WARNING, ex.getMessage());</span>
+<span class="nc" id="L1684">        }</span>
+
+<span class="nc bnc" id="L1686" title="All 2 branches missed.">        if (string2.equalsIgnoreCase(&quot;bicycle&quot;)) {</span>
+<span class="nc" id="L1687">            List&lt;Bicycle&gt; bicycles = vc.getAllBicyclesOfPark(poiFrom.getIdPoint());</span>
+<span class="nc bnc" id="L1688" title="All 2 branches missed.">            for (Bicycle b : bicycles) {</span>
+<span class="nc bnc" id="L1689" title="All 2 branches missed.">                if ((int) b.getWheelSize() == Integer.parseInt(string3)) {</span>
+<span class="nc" id="L1690">                    bicycle = b;</span>
+                }
+<span class="nc" id="L1692">            }</span>
+
+<span class="nc" id="L1694">            listOfRoutes = rc.mostEfficientRoutePassingThroughPoints(user.getIdUser(), bicycle, poiFrom, poiTo, pois, i, bln, string5);</span>
+
+<span class="nc bnc" id="L1696" title="All 2 branches missed.">        } else if (string2.equalsIgnoreCase(&quot;escooter&quot;)) {</span>
+<span class="nc" id="L1697">            List&lt;Scooter&gt; scooters = vc.getAllScootersOfPark(poiFrom.getIdPoint());</span>
+<span class="nc bnc" id="L1698" title="All 2 branches missed.">            for (Scooter s : scooters) {</span>
+<span class="nc bnc" id="L1699" title="All 4 branches missed.">                if (string3.equalsIgnoreCase(&quot;off-road&quot;) &amp;&amp; s.getType() == 1) {</span>
+<span class="nc" id="L1700">                    scooter = s;</span>
+<span class="nc" id="L1701">                    listOfRoutes = rc.mostEfficientRoutePassingThroughPoints(user.getIdUser(), scooter, poiFrom, poiTo, pois, i, bln, string5);</span>
+<span class="nc bnc" id="L1702" title="All 4 branches missed.">                } else if (string3.equalsIgnoreCase(&quot;city&quot;) &amp;&amp; s.getType() == 2) {</span>
+<span class="nc" id="L1703">                    scooter = s;</span>
+<span class="nc" id="L1704">                    listOfRoutes = rc.mostEfficientRoutePassingThroughPoints(user.getIdUser(), scooter, poiFrom, poiTo, pois, i, bln, string5);</span>
+                } else {
+<span class="nc" id="L1706">                    return 0;</span>
+                }
+<span class="nc" id="L1708">            }</span>
+<span class="nc" id="L1709">        } else {</span>
+<span class="nc" id="L1710">            return 0;</span>
+        }
+        try {
+<span class="nc" id="L1713">            writer = new BufferedWriter(new FileWriter(string7));</span>
+<span class="nc bnc" id="L1714" title="All 2 branches missed.">            for (Pair&lt;Double, List&lt;PointInterest&gt;&gt; pair : listOfRoutes) {</span>
+<span class="nc" id="L1715">                double distance = 0;</span>
+
+<span class="nc bnc" id="L1717" title="All 2 branches missed.">                for (int x = 0; x &lt; pair.getValue().size() - 1; x++) {</span>
+<span class="nc" id="L1718">                    distance += PhysicsAlgorithms.calculateDistanceWithElevation(pair.getValue().get(x).getGeoLocation().getLatitude(),</span>
+<span class="nc" id="L1719">                            pair.getValue().get(x + 1).getGeoLocation().getLatitude(), pair.getValue().get(x).getGeoLocation().getLongitude(),</span>
+<span class="nc" id="L1720">                            pair.getValue().get(x + 1).getGeoLocation().getLongitude(), pair.getValue().get(x).getGeoLocation().getElevation(),</span>
+<span class="nc" id="L1721">                            pair.getValue().get(x + 1).getGeoLocation().getElevation());</span>
+                }
+<span class="nc" id="L1723">                double elevationDif = pair.getValue().get(0).getGeoLocation().getElevation() - pair.getValue().get(pair.getValue().size() - 1).getGeoLocation().getElevation();</span>
+
+<span class="nc" id="L1725">                writer.newLine();</span>
+<span class="nc" id="L1726">                writer.write(&quot;Path &quot; + String.format(&quot;%03d&quot;, count));</span>
+<span class="nc" id="L1727">                writer.newLine();</span>
+<span class="nc" id="L1728">                writer.write(&quot;total_distance: &quot; + distance);</span>
+<span class="nc" id="L1729">                writer.newLine();</span>
+<span class="nc" id="L1730">                writer.write(&quot;total_energy: &quot; + pair.getKey());</span>
+<span class="nc" id="L1731">                writer.newLine();</span>
+<span class="nc" id="L1732">                writer.write(&quot;elevation: &quot; + elevationDif);</span>
+
+<span class="nc bnc" id="L1734" title="All 2 branches missed.">                for (PointInterest poi : pair.getValue()) {</span>
+<span class="nc" id="L1735">                    writer.newLine();</span>
+<span class="nc" id="L1736">                    writer.write(poi.getGeoLocation().getLatitude() + &quot;;&quot; + poi.getGeoLocation().getLongitude());</span>
+<span class="nc" id="L1737">                }</span>
+<span class="nc" id="L1738">                count++;</span>
+<span class="nc" id="L1739">            }</span>
+<span class="nc" id="L1740">        } catch (IOException e) {</span>
+<span class="nc" id="L1741">            Logger.getLogger(Facade.class.getName()).log(Level.WARNING, e.getMessage());</span>
+        } finally {
+            try {
+<span class="nc" id="L1744">                writer.close();</span>
+<span class="nc" id="L1745">            } catch (IOException | NullPointerException ex) {</span>
+<span class="nc" id="L1746">                Logger.getLogger(Facade.class.getName()).log(Level.SEVERE, null, ex);</span>
+<span class="nc" id="L1747">            }</span>
+        }
+
+<span class="nc" id="L1750">        return listOfRoutes.size();</span>
+    }
+
+    @Override
+    public double getInvoiceForMonth(int i, String string, String string1) {
+<span class="nc" id="L1755">        InvoiceController ic = new InvoiceController(new InvoiceDataHandler());</span>
+<span class="nc" id="L1756">        UserController uc = new UserController(new UserDataHandler());</span>
+<span class="nc" id="L1757">        RentalController rc = new RentalController(new RentalDataHandler());</span>
+<span class="nc" id="L1758">        User u = uc.getUserByUsername(string);</span>
+<span class="nc" id="L1759">        int previousPoints = u.getPoints();</span>
+<span class="nc" id="L1760">        int earnedPoints = 0;</span>
+<span class="nc" id="L1761">        double chargedValue = 0;</span>
+<span class="nc" id="L1762">        Invoice invoice = null;</span>
+        try {
+<span class="nc" id="L1764">            DataHandler.getInstance().getConnection().setAutoCommit(false);</span>
+<span class="nc" id="L1765">            invoice = ic.addInvoice(u.getIdUser(), i);</span>
+<span class="nc bnc" id="L1766" title="All 2 branches missed.">            if (invoice.getIdInvoice() != 0) {</span>
+<span class="nc" id="L1767">                DataHandler.getInstance().getConnection().commit();</span>
+            }
+<span class="nc" id="L1769">        } catch (SQLException ex) {</span>
+<span class="nc" id="L1770">            Logger.getLogger(Facade.class.getName()).log(Level.SEVERE, null, ex);</span>
+<span class="nc" id="L1771">        }</span>
+
+<span class="nc" id="L1773">        BufferedWriter writer = null;</span>
+
+<span class="nc" id="L1775">        Invoice invoice2 = ic.getById(invoice.getIdInvoice());</span>
+<span class="nc" id="L1776">        List&lt;InvoiceLine&gt; invoiceLines = ic.getInvoiceLinesOfInvoice(invoice2.getIdInvoice());</span>
+<span class="nc bnc" id="L1777" title="All 2 branches missed.">        for (InvoiceLine invoiceLine : invoiceLines) {</span>
+<span class="nc" id="L1778">            earnedPoints = earnedPoints + invoiceLine.getEarnedPoints();</span>
+<span class="nc" id="L1779">        }</span>
+<span class="nc" id="L1780">        int actualPoints = uc.getUserByUsername(string).getPoints();</span>
+        try {
+
+<span class="nc" id="L1783">            writer = new BufferedWriter(new FileWriter(string1));</span>
+<span class="nc" id="L1784">            writer.write(u.getUsername());</span>
+<span class="nc" id="L1785">            writer.newLine();</span>
+<span class="nc" id="L1786">            writer.write(&quot;Previous points:&quot; + previousPoints);</span>
+<span class="nc" id="L1787">            writer.newLine();</span>
+<span class="nc" id="L1788">            writer.write(&quot;Earned points:&quot; + earnedPoints);</span>
+<span class="nc" id="L1789">            writer.newLine();</span>
+<span class="nc" id="L1790">            writer.write(&quot;Discounted points:&quot; + (previousPoints - actualPoints));</span>
+<span class="nc" id="L1791">            writer.newLine();</span>
+<span class="nc" id="L1792">            writer.write(&quot;Actual points:&quot; + actualPoints);</span>
+<span class="nc" id="L1793">            writer.newLine();</span>
+<span class="nc" id="L1794">            writer.write(&quot;Charged Value:&quot; + invoice2.getTotalPrice());</span>
+<span class="nc" id="L1795">            writer.newLine();</span>
+<span class="nc" id="L1796">            writer.write(&quot;vehicle description;vehicle unlock time;vehicle lock time;&quot;</span>
+                    + &quot;origin park latitude;origin park longitude;destination park longitude;&quot;
+                    + &quot;destination park latitude;total time;charged value&quot;);
+
+<span class="nc bnc" id="L1800" title="All 2 branches missed.">            for (InvoiceLine invoiceLine : invoiceLines) {</span>
+<span class="nc" id="L1801">                writer.newLine();</span>
+<span class="nc" id="L1802">                Rental rental = rc.getRentalById(invoiceLine.getIdRental());</span>
+<span class="nc" id="L1803">                writer.write(rental.getVehicle().getDescription() + &quot;;&quot; + rental.getBeginDateHour() + &quot;;&quot;</span>
+<span class="nc" id="L1804">                        + rental.getEndDateHour() + &quot;;&quot; + rental.getParkFrom().getGeoLocation().getLatitude() + &quot;;&quot;</span>
+<span class="nc" id="L1805">                        + rental.getParkFrom().getGeoLocation().getLongitude() + &quot;;&quot;</span>
+<span class="nc" id="L1806">                        + rental.getParkTo().getGeoLocation().getLatitude() + &quot;;&quot;</span>
+<span class="nc" id="L1807">                        + rental.getParkTo().getGeoLocation().getLongitude() + &quot;;&quot;</span>
+<span class="nc" id="L1808">                        + rental.getDuration() * 60 + &quot;;&quot; + rental.getCost());</span>
+<span class="nc" id="L1809">            }</span>
+
+<span class="nc" id="L1811">        } catch (IOException e) {</span>
+<span class="nc" id="L1812">            Logger.getLogger(Facade.class.getName()).log(Level.WARNING, e.getMessage());</span>
+        } finally {
+            try {
+<span class="nc" id="L1815">                writer.close();</span>
+<span class="nc" id="L1816">            } catch (IOException | NullPointerException ex) {</span>
+<span class="nc" id="L1817">                Logger.getLogger(Facade.class.getName()).log(Level.SEVERE, null, ex);</span>
+<span class="nc" id="L1818">            }</span>
+        }
+<span class="nc" id="L1820">        return chargedValue;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

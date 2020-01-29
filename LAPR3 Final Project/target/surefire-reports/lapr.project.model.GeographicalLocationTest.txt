@@ -1,0 +1,4 @@
+-------------------------------------------------------------------------------
+Test set: lapr.project.model.GeographicalLocationTest
+-------------------------------------------------------------------------------
+Tests run: 19, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.015 s - in lapr.project.model.GeographicalLocationTest

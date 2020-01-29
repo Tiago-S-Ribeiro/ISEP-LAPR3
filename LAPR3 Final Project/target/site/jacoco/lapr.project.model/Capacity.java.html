@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="pt"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Capacity.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">ride-sharing</a> &gt; <a href="index.source.html" class="el_package">lapr.project.model</a> &gt; <span class="el_source">Capacity.java</span></div><h1>Capacity.java</h1><pre class="source lang-java linenums">/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package lapr.project.model;
+
+/**
+ *
+ * @author jujps00
+ */
+public class Capacity {
+
+    /**
+     * Representative of an instance of capacity type.
+     */
+    private int type;
+
+    /**
+     * Representative of an instance of capacity max.
+     */
+    private int capacityMax;
+    
+    private int availability;
+
+    /**
+     * Constructor of the class Capacity with the variables passed as a
+     * parameter.
+     *
+     * @param type type of the vehicle
+     * @param capacityMax maximum park capacity for vehicle type
+     */
+<span class="fc" id="L33">    public Capacity(int type, int capacityMax) {</span>
+<span class="fc" id="L34">        this.type = type;</span>
+<span class="fc" id="L35">        this.capacityMax = capacityMax;</span>
+<span class="fc" id="L36">        this.availability = capacityMax;</span>
+<span class="fc" id="L37">    }</span>
+
+    /**
+     * @return the type
+     */
+    public int getType() {
+<span class="fc" id="L43">        return type;</span>
+    }
+
+    /**
+     * @param type the type to set
+     */
+    public void setType(int type) {
+<span class="fc" id="L50">        this.type = type;</span>
+<span class="fc" id="L51">    }</span>
+
+    /**
+     * @return the capcity_max
+     */
+    public int getCapacityMax() {
+<span class="fc" id="L57">        return capacityMax;</span>
+    }
+
+    /**
+     * @param capacityMax the capcity_max to set
+     */
+    public void setCapacityMax(int capacityMax) {
+<span class="fc" id="L64">        this.capacityMax = capacityMax;</span>
+<span class="fc" id="L65">    }</span>
+    
+    /**
+     * @return the capcity_max
+     */
+    public int getAvailability() {
+<span class="fc" id="L71">        return availability;</span>
+    }
+
+    /**
+     * @param availability park availability
+     */
+    public void setAvailability(int availability) {
+<span class="fc" id="L78">        this.availability = availability;</span>
+<span class="fc" id="L79">    }</span>
+
+    /**
+     * Equals method.
+     *
+     * @param obj The other instance passed as a parameter.
+     * @return True if both objects are the same, false if not.
+     */
+    @Override
+    public boolean equals(Object obj) {
+<span class="fc bfc" id="L89" title="All 2 branches covered.">        if (this == obj) {</span>
+<span class="fc" id="L90">            return true;</span>
+        }
+<span class="fc bfc" id="L92" title="All 2 branches covered.">        if (obj == null) {</span>
+<span class="fc" id="L93">            return false;</span>
+        }
+<span class="fc bfc" id="L95" title="All 2 branches covered.">        if (getClass() != obj.getClass()) {</span>
+<span class="fc" id="L96">            return false;</span>
+        }
+<span class="fc" id="L98">        Capacity other = (Capacity) obj;</span>
+<span class="fc bfc" id="L99" title="All 4 branches covered.">        return this.type == (other.type)</span>
+            &amp;&amp; this.capacityMax == other.capacityMax;
+    }
+    
+    @Override
+    public int hashCode() {
+<span class="fc" id="L105">        int hash = 3;</span>
+<span class="fc" id="L106">        hash = 31 * hash + this.type;</span>
+<span class="fc" id="L107">        hash = 31 * hash + this.capacityMax;</span>
+<span class="fc" id="L108">        return hash;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

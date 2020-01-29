@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="pt"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>InvoiceLine.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">ride-sharing</a> &gt; <a href="index.source.html" class="el_package">lapr.project.model</a> &gt; <span class="el_source">InvoiceLine.java</span></div><h1>InvoiceLine.java</h1><pre class="source lang-java linenums">/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package lapr.project.model;
+
+/**
+ *
+ * @author jujps00
+ */
+public class InvoiceLine {
+    
+    /**
+     * id of the rental the invoice represents
+     */
+    private int idRental;
+    /**
+     * ID of the vehicle used
+     */
+    private int idVehicle;
+    /**
+     * duration of the rental
+     */
+    private double rentalDuration;
+    /**
+     * cost of the invoice line
+     */
+    private double rentalCost;
+    /**
+     * date of the invoice
+     */
+    private String date;
+    
+    /**
+     * earned points in that rental 
+     */
+    private int earnedPoints;
+    
+<span class="fc" id="L40">    public InvoiceLine(int idRental, int idVehicle, double rentalDuration, double rentalCost, String date, int earnedPoints) {</span>
+<span class="fc" id="L41">        this.idRental = idRental;</span>
+<span class="fc" id="L42">        this.idVehicle = idVehicle;</span>
+<span class="fc" id="L43">        this.rentalDuration = rentalDuration;</span>
+<span class="fc" id="L44">        this.rentalCost = rentalCost;</span>
+<span class="fc" id="L45">        this.date = date;</span>
+<span class="fc" id="L46">        this.earnedPoints = earnedPoints;</span>
+<span class="fc" id="L47">    }</span>
+
+    /**
+     * @return the idRental
+     */
+    public int getIdRental() {
+<span class="fc" id="L53">        return idRental;</span>
+    }
+
+    /**
+     * @param idRental the idRental to set
+     */
+    public void setIdRental(int idRental) {
+<span class="fc" id="L60">        this.idRental = idRental;</span>
+<span class="fc" id="L61">    }</span>
+
+    /**
+     * @return the idVehicle
+     */
+    public int getIdVehicle() {
+<span class="fc" id="L67">        return idVehicle;</span>
+    }
+
+    /**
+     * @param idVehicle the idVehicle to set
+     */
+    public void setIdVehicle(int idVehicle) {
+<span class="fc" id="L74">        this.idVehicle = idVehicle;</span>
+<span class="fc" id="L75">    }</span>
+
+    /**
+     * @return the rental_duration
+     */
+    public double getRentalDuration() {
+<span class="fc" id="L81">        return rentalDuration;</span>
+    }
+
+    /**
+     * 
+     * @return earned points
+     */
+    public int getEarnedPoints() {
+<span class="fc" id="L89">        return earnedPoints;</span>
+    }
+
+    /**
+     * @param rentalDuration the rental_duration to set
+     */
+    public void setRentalDuration(double rentalDuration) {
+<span class="fc" id="L96">        this.rentalDuration = rentalDuration;</span>
+<span class="fc" id="L97">    }</span>
+
+    /**
+     * @return the rental_cost
+     */
+    public double getRentalCost() {
+<span class="fc" id="L103">        return rentalCost;</span>
+    }
+
+    /**
+     * @param rentalCost the rental_cost to set
+     */
+    public void setRentalCost(double rentalCost) {
+<span class="fc" id="L110">        this.rentalCost = rentalCost;</span>
+<span class="fc" id="L111">    }</span>
+    
+    /**
+     * @return the date of the invoice
+     */
+    public String getDate() {
+<span class="fc" id="L117">        return date;</span>
+    }
+
+    /**
+     * @param date to be set
+     */
+    public void setDate(String date) {
+<span class="fc" id="L124">        this.date = date;</span>
+<span class="fc" id="L125">    }</span>
+
+    /**
+     * 
+     * @param earnedPoints new earned points
+     */
+    public void setEarnedPoints(int earnedPoints) {
+<span class="fc" id="L132">        this.earnedPoints = earnedPoints;</span>
+<span class="fc" id="L133">    }</span>
+    
+    
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

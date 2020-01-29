@@ -1,0 +1,318 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="pt"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>UserDataHandler.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">ride-sharing</a> &gt; <a href="index.source.html" class="el_package">lapr.project.data</a> &gt; <span class="el_source">UserDataHandler.java</span></div><h1>UserDataHandler.java</h1><pre class="source lang-java linenums">/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package lapr.project.data;
+
+import java.sql.CallableStatement;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.TreeMap;
+import lapr.project.model.User;
+import oracle.jdbc.OracleTypes;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import lapr.project.model.InvoiceLine;
+import lapr.project.model.Park;
+import lapr.project.model.Path;
+import lapr.project.model.PointInterest;
+import lapr.project.model.Rental;
+import lapr.project.model.Vehicle;
+import lapr.project.utils.PhysicsAlgorithms;
+
+/**
+ *
+ * @author Beatriz Ribeiro
+ */
+public class UserDataHandler {
+
+<span class="fc" id="L34">    private static final Logger WARNING_LOGGER = Logger.getLogger(User.class.getName());</span>
+
+    private final DataHandler dataHandler;
+
+<span class="nc" id="L38">    public UserDataHandler() {</span>
+<span class="nc" id="L39">        dataHandler = DataHandler.getInstance();</span>
+<span class="nc" id="L40">    }</span>
+
+    public static void warningError() {
+<span class="nc" id="L43">        WARNING_LOGGER.log(Level.WARNING, &quot;Error on reading Database.&quot;);</span>
+<span class="nc" id="L44">    }</span>
+
+    public int add(User element) throws SQLException {
+<span class="nc" id="L47">        CallableStatement callStmt = null;</span>
+<span class="nc" id="L48">        int id = 0;</span>
+
+<span class="nc" id="L50">        callStmt = dataHandler.getConnection().prepareCall(&quot;{? = call funcAddUser(?,?,?,?,?,?,?,?) }&quot;);</span>
+<span class="nc" id="L51">        callStmt.registerOutParameter(1, OracleTypes.INTEGER);</span>
+<span class="nc" id="L52">        callStmt.setString(2, element.getEmail());</span>
+<span class="nc" id="L53">        callStmt.setString(3, element.getUsername());</span>
+<span class="nc" id="L54">        callStmt.setString(4, element.getCreditCard());</span>
+<span class="nc" id="L55">        callStmt.setFloat(5, element.getCyclingAverageSpeed());</span>
+<span class="nc" id="L56">        callStmt.setFloat(6, element.getHeight());</span>
+<span class="nc" id="L57">        callStmt.setFloat(7, element.getWeight());</span>
+<span class="nc" id="L58">        callStmt.setString(8, element.getGender());</span>
+<span class="nc" id="L59">        callStmt.setString(9, element.getPwd());</span>
+<span class="nc" id="L60">        callStmt.execute();</span>
+
+<span class="nc" id="L62">        id = callStmt.getInt(1);</span>
+
+        try {
+<span class="nc" id="L65">            callStmt.close();</span>
+<span class="nc" id="L66">        } catch (SQLException | NullPointerException ex ) {</span>
+<span class="nc" id="L67">            Logger.getLogger(UserDataHandler.class.getName()).log(Level.WARNING, ex.getMessage());</span>
+<span class="nc" id="L68">        }</span>
+
+<span class="nc" id="L70">        return id;</span>
+    }
+
+    public User getById(int id) {
+<span class="nc" id="L74">        String query = &quot;SELECT * FROM user_app WHERE id_user= &quot; + id;</span>
+<span class="nc" id="L75">        Statement stm = null;</span>
+<span class="nc" id="L76">        ResultSet rst = null;</span>
+<span class="nc" id="L77">        User user = null;</span>
+        try {
+<span class="nc" id="L79">            Connection con = DataHandler.getInstance().getConnection();</span>
+<span class="nc" id="L80">            stm = con.createStatement();</span>
+<span class="nc" id="L81">            rst = stm.executeQuery(query);</span>
+
+<span class="nc bnc" id="L83" title="All 2 branches missed.">            if (rst.next()) {</span>
+<span class="nc" id="L84">                String email = rst.getString(2);</span>
+<span class="nc" id="L85">                String username = rst.getString(3);</span>
+<span class="nc" id="L86">                String creditCard = rst.getString(4);</span>
+<span class="nc" id="L87">                Float cyclingAverageSpeed = rst.getFloat(5);</span>
+<span class="nc" id="L88">                int height = rst.getInt(6);</span>
+<span class="nc" id="L89">                Float weight = rst.getFloat(7);</span>
+<span class="nc" id="L90">                String gender = rst.getString(8);</span>
+<span class="nc" id="L91">                String pwd = rst.getString(9);</span>
+<span class="nc" id="L92">                int points = rst.getInt(10);</span>
+<span class="nc" id="L93">                user = new User(id, email, username, creditCard, cyclingAverageSpeed,</span>
+<span class="nc" id="L94">                        height, weight, gender, pwd);</span>
+<span class="nc" id="L95">                user.setPoints(points);</span>
+            }
+
+<span class="nc" id="L98">        } catch (SQLException ex) {</span>
+<span class="nc" id="L99">            Logger.getLogger(UserDataHandler.class.getName()).log(Level.WARNING, ex.getMessage());</span>
+        } finally {
+            try {
+<span class="nc bnc" id="L102" title="All 2 branches missed.">                if (rst != null) {</span>
+<span class="nc" id="L103">                    rst.close();</span>
+                }
+<span class="nc bnc" id="L105" title="All 2 branches missed.">                if (stm != null) {</span>
+<span class="nc" id="L106">                    stm.close();</span>
+                }
+<span class="nc" id="L108">            } catch (SQLException ex) {</span>
+<span class="nc" id="L109">                Logger.getLogger(UserDataHandler.class.getName()).log(Level.WARNING, ex.getMessage());</span>
+<span class="nc" id="L110">            }</span>
+        }
+<span class="nc" id="L112">        return user;</span>
+    }
+
+    /**
+     * Validates if the loggin has been successfull
+     *
+     * @param email username or email
+     * @param password password
+     * @return if the loggin was successfull or not
+     */
+    public int validateLogin(String email, String password) {
+<span class="nc" id="L123">        CallableStatement callStmt = null;</span>
+<span class="nc" id="L124">        int result = 0;</span>
+        try {
+<span class="nc" id="L126">            callStmt = dataHandler.getConnection().prepareCall(&quot;{ ? = call funcValidateLogin(?,?) }&quot;);</span>
+<span class="nc" id="L127">            callStmt.registerOutParameter(1, OracleTypes.INTEGER);</span>
+<span class="nc" id="L128">            callStmt.setString(2, email);</span>
+<span class="nc" id="L129">            callStmt.setString(3, password);</span>
+<span class="nc" id="L130">            callStmt.execute();</span>
+
+<span class="nc" id="L132">            result = callStmt.getInt(1);</span>
+
+<span class="nc" id="L134">        } catch (SQLException e) {</span>
+<span class="nc" id="L135">            Logger.getLogger(UserDataHandler.class.getName()).log(Level.WARNING, e.getMessage());</span>
+        } finally {
+            try {
+<span class="nc bnc" id="L138" title="All 2 branches missed.">                if (callStmt != null) {</span>
+<span class="nc" id="L139">                    callStmt.close();</span>
+                }
+<span class="nc" id="L141">            } catch (SQLException ex) {</span>
+<span class="nc" id="L142">                Logger.getLogger(UserDataHandler.class.getName()).log(Level.WARNING, ex.getMessage());</span>
+<span class="nc" id="L143">            }</span>
+        }
+<span class="nc" id="L145">        return result;</span>
+    }
+
+    public double calculateAmountCalories(ArrayList&lt;PointInterest&gt; path, int userId, int vehicleId) {
+
+<span class="nc" id="L150">        double calories = 0;</span>
+<span class="nc bnc" id="L151" title="All 2 branches missed.">        if (path.size() &gt;= 2) {</span>
+<span class="nc bnc" id="L152" title="All 2 branches missed.">            for (int i = 0; i &lt; path.size() - 1; i++) {</span>
+
+<span class="nc" id="L154">                User user = this.getById(userId);</span>
+<span class="nc" id="L155">                Vehicle vehicle = new VehicleDataHandler().getById(vehicleId);</span>
+<span class="nc" id="L156">                PointInterest initialPoi = path.get(i);</span>
+<span class="nc" id="L157">                PointInterest finalPoi = path.get(i + 1);</span>
+<span class="nc" id="L158">                Path pa = new ParkDataHandler().getPathByIdParks(initialPoi.getIdPoint(), finalPoi.getIdPoint());</span>
+
+<span class="nc" id="L160">                calories += new PhysicsAlgorithms().calculateCalories(vehicle.getWeight(), user.getWeight(),</span>
+<span class="nc" id="L161">                        pa.getKineticCoefficient(), vehicle.getFrontalArea(), user.getCyclingAverageSpeed(),</span>
+<span class="nc" id="L162">                        vehicle.getAerodynamicCoefficient(), pa.getWindSpeed(), pa.getWindDirection(),</span>
+<span class="nc" id="L163">                        initialPoi.getGeoLocation().getElevation(), finalPoi.getGeoLocation().getElevation(),</span>
+<span class="nc" id="L164">                        initialPoi.getGeoLocation().getLatitude(), finalPoi.getGeoLocation().getLatitude(),</span>
+<span class="nc" id="L165">                        initialPoi.getGeoLocation().getLongitude(), finalPoi.getGeoLocation().getLongitude());</span>
+
+            }
+        }
+<span class="nc" id="L169">        return calories;</span>
+    }
+
+    public List&lt;Rental&gt; getUserHistorical(int id) {
+<span class="nc" id="L173">        String query = &quot;SELECT * FROM rental WHERE (rental_begin_date_hour IS NOT NULL &quot;</span>
+                + &quot;AND rental_end_date_hour IS NOT NULL) AND id_user = &quot; + id;
+
+<span class="nc" id="L176">        Statement stm = null;</span>
+<span class="nc" id="L177">        ResultSet rst = null;</span>
+<span class="nc" id="L178">        ArrayList&lt;Rental&gt; historical = new ArrayList&lt;&gt;();</span>
+<span class="nc" id="L179">        VehicleDataHandler vehicleDataHandler = new VehicleDataHandler();</span>
+<span class="nc" id="L180">        ParkDataHandler parkDataHandler = new ParkDataHandler();</span>
+<span class="nc" id="L181">        UserDataHandler userDataHandler = new UserDataHandler();</span>
+        
+        try {
+<span class="nc" id="L184">            stm = dataHandler.getConnection().createStatement();</span>
+<span class="nc" id="L185">            rst = stm.executeQuery(query);</span>
+
+<span class="nc bnc" id="L187" title="All 2 branches missed.">            while (rst.next()) {</span>
+<span class="nc" id="L188">                Park parkPicking = parkDataHandler.getById(rst.getInt(2));</span>
+<span class="nc" id="L189">                Park parkDelivery=parkDataHandler.getById(rst.getInt(3));</span>
+<span class="nc" id="L190">                Vehicle vehicle = vehicleDataHandler.getById(rst.getInt(4));</span>
+<span class="nc" id="L191">                User user = userDataHandler.getById(rst.getInt(5));</span>
+<span class="nc" id="L192">                double cost = rst.getDouble(6);</span>
+<span class="nc" id="L193">                String beginDateHour = String.valueOf(rst.getDate(7).getTime());</span>
+<span class="nc" id="L194">                String endDateHour = String.valueOf(rst.getDate(8).getTime());</span>
+<span class="nc" id="L195">                int duration = rst.getInt(9);</span>
+<span class="nc" id="L196">                int earnedPoints = rst.getInt(10);</span>
+<span class="nc" id="L197">                Rental rental = new Rental(user, vehicle, parkPicking);</span>
+<span class="nc" id="L198">                rental.setParkFrom(parkPicking);</span>
+<span class="nc" id="L199">                rental.setParkTo(parkDelivery);</span>
+<span class="nc" id="L200">                rental.setCost(cost); </span>
+<span class="nc" id="L201">                rental.setBeginDateHour(beginDateHour); rental.setEndDateHour(endDateHour);</span>
+<span class="nc" id="L202">                rental.setDuration(duration); rental.setEarnedPoints(earnedPoints);</span>
+<span class="nc" id="L203">                historical.add(rental);</span>
+<span class="nc" id="L204">            }</span>
+<span class="nc" id="L205">        } catch (SQLException e) {</span>
+<span class="nc" id="L206">            Logger.getLogger(UserDataHandler.class.getName()).log(Level.WARNING, e.getMessage());</span>
+        } finally {
+            try {
+<span class="nc bnc" id="L209" title="All 2 branches missed.">                if (rst != null) {</span>
+<span class="nc" id="L210">                    rst.close();</span>
+                }
+<span class="nc bnc" id="L212" title="All 2 branches missed.">                if (stm != null) {</span>
+<span class="nc" id="L213">                    stm.close();</span>
+                }
+<span class="nc" id="L215">            } catch (SQLException ex) {</span>
+<span class="nc" id="L216">                Logger.getLogger(UserDataHandler.class.getName()).log(Level.WARNING, ex.getMessage());</span>
+<span class="nc" id="L217">            }</span>
+        }
+<span class="nc" id="L219">        return historical;</span>
+    }
+
+    /**
+     * Returns the User with the provided username
+     *
+     * @param username of the User
+     * @return User object
+     */
+    public User getUserByUsername(String username) {
+<span class="nc" id="L229">        String query = &quot;SELECT * FROM user_app WHERE username LIKE '&quot; + username + &quot;'&quot;;</span>
+<span class="nc" id="L230">        Statement stm = null;</span>
+<span class="nc" id="L231">        ResultSet rst = null;</span>
+<span class="nc" id="L232">        User user = null;</span>
+        try {
+<span class="nc" id="L234">            stm = dataHandler.getConnection().createStatement();</span>
+<span class="nc" id="L235">            rst = stm.executeQuery(query);</span>
+
+<span class="nc bnc" id="L237" title="All 2 branches missed.">            if (rst.next()) {</span>
+<span class="nc" id="L238">                int id = rst.getInt(1);</span>
+<span class="nc" id="L239">                String email = rst.getString(2);</span>
+<span class="nc" id="L240">                username = rst.getString(3);</span>
+<span class="nc" id="L241">                String creditCard = rst.getString(4);</span>
+<span class="nc" id="L242">                Float cyclingAverageSpeed = rst.getFloat(5);</span>
+<span class="nc" id="L243">                int height = rst.getInt(6);</span>
+<span class="nc" id="L244">                Float weight = rst.getFloat(7);</span>
+<span class="nc" id="L245">                String gender = rst.getString(8);</span>
+<span class="nc" id="L246">                String pwd = rst.getString(9);</span>
+<span class="nc" id="L247">                int points = rst.getInt(10);</span>
+<span class="nc" id="L248">                user = new User(id, email, username, creditCard, cyclingAverageSpeed,</span>
+<span class="nc" id="L249">                        height, weight, gender, pwd);</span>
+<span class="nc" id="L250">                user.setPoints(points);</span>
+                
+            }
+
+<span class="nc" id="L254">        } catch (SQLException ex) {</span>
+<span class="nc" id="L255">            Logger.getLogger(UserDataHandler.class.getName()).log(Level.WARNING, ex.getMessage());</span>
+        } finally {
+            try {
+<span class="nc bnc" id="L258" title="All 2 branches missed.">                if (rst != null) {</span>
+<span class="nc" id="L259">                    rst.close();</span>
+                }
+<span class="nc bnc" id="L261" title="All 2 branches missed.">                if (stm != null) {</span>
+<span class="nc" id="L262">                    stm.close();</span>
+                }
+<span class="nc" id="L264">            } catch (SQLException ex) {</span>
+<span class="nc" id="L265">                Logger.getLogger(UserDataHandler.class.getName()).log(Level.WARNING, ex.getMessage());</span>
+<span class="nc" id="L266">            }</span>
+        }
+<span class="nc" id="L268">        return user;</span>
+    }
+    
+    public TreeMap&lt;Long, InvoiceLine&gt; getUnpaidRentals(int idUser){
+        
+<span class="nc" id="L273">        String query = &quot;SELECT r.rental_begin_date_hour, il.* FROM invoice_line il INNER JOIN rental r ON il.id_rental = r.id_rental &quot;</span>
+                + &quot;WHERE il.id_invoice IS NULL AND r.id_user = &quot; + idUser
+                + &quot; UNION &quot;
+                + &quot;SELECT r.rental_begin_date_hour, il.* FROM invoice_line il INNER JOIN rental r ON il.id_rental = r.id_rental &quot;
+                + &quot;INNER JOIN invoice i ON il.id_invoice = i.id_invoice &quot;
+                + &quot;WHERE r.id_user = &quot; + idUser;
+        
+<span class="nc" id="L280">        TreeMap&lt;Long, InvoiceLine&gt; unpaidRentals = new TreeMap&lt;&gt;();</span>
+<span class="nc" id="L281">        Statement stm = null;</span>
+<span class="nc" id="L282">        ResultSet rst = null;</span>
+        
+        try{
+<span class="nc" id="L285">            stm = dataHandler.getConnection().createStatement();</span>
+<span class="nc" id="L286">            rst = stm.executeQuery(query);</span>
+            
+<span class="nc bnc" id="L288" title="All 2 branches missed.">            while(rst.next()){</span>
+<span class="nc" id="L289">                long dateBegin = rst.getDate(1).getTime();</span>
+<span class="nc" id="L290">                int idRental = rst.getInt(2);</span>
+                //int idInvoice = rst.getInt(3);
+<span class="nc" id="L292">                int idVehicle = rst.getInt(4);</span>
+<span class="nc" id="L293">                int duration = rst.getInt(5);</span>
+<span class="nc" id="L294">                double cost = rst.getDouble(6);</span>
+<span class="nc" id="L295">                long dateEnd = rst.getDate(7).getTime();</span>
+<span class="nc" id="L296">                int earnedPoints = rst.getInt(8);</span>
+                
+<span class="nc" id="L298">                InvoiceLine il = new InvoiceLine(idRental, idVehicle, duration, cost, String.valueOf(dateEnd), earnedPoints);</span>
+<span class="nc" id="L299">                unpaidRentals.put(dateBegin, il);</span>
+<span class="nc" id="L300">            }</span>
+<span class="nc" id="L301">        } catch (SQLException ex) {</span>
+<span class="nc" id="L302">            Logger.getLogger(UserDataHandler.class.getName()).log(Level.WARNING, ex.getMessage());</span>
+        } finally {
+            try {
+<span class="nc bnc" id="L305" title="All 2 branches missed.">                if (rst != null) {</span>
+<span class="nc" id="L306">                    rst.close();</span>
+                }
+<span class="nc bnc" id="L308" title="All 2 branches missed.">                if (stm != null) {</span>
+<span class="nc" id="L309">                    stm.close();</span>
+                }
+<span class="nc" id="L311">            } catch (SQLException ex) {</span>
+<span class="nc" id="L312">                Logger.getLogger(UserDataHandler.class.getName()).log(Level.WARNING, ex.getMessage());</span>
+<span class="nc" id="L313">            }</span>
+        }
+<span class="nc" id="L315">        return unpaidRentals;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

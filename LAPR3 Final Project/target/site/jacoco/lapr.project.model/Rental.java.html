@@ -1,0 +1,253 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="pt"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Rental.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">ride-sharing</a> &gt; <a href="index.source.html" class="el_package">lapr.project.model</a> &gt; <span class="el_source">Rental.java</span></div><h1>Rental.java</h1><pre class="source lang-java linenums">/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package lapr.project.model;
+
+/**
+ *
+ * @author TiagoRibeiro
+ */
+public class Rental implements Comparable&lt;Rental&gt;{
+
+    /**
+     * id of rental
+     */
+    private int idRental;
+    /**
+     * total cost of rental
+     */
+    private double cost;
+    /**
+     * beginDateHour of rental
+     */
+    private String beginDateHour;
+    
+    /**
+     * end date hour of rental
+     */
+    private String endDateHour;
+    
+    /**
+     * duration of rental
+     */
+    private int duration;
+
+    /**
+     * user that made the rental
+     */
+    private User user;
+    
+    /**
+     * rented vehicle  
+     */
+    private Vehicle vehicle;
+    
+    /**
+     * park where vehicle was unlocked
+     */
+    private Park parkFrom;
+    
+    /**
+     * park where vehicle was parked
+     */
+    private Park parkTo;
+    
+    /**
+     * earned points on trip 
+     */
+    
+    private int earnedPoints;
+    /**
+     * full constructor
+     *
+     * @param user user that made the rental
+     * @param vehicle rented vehicle
+     * @param parkFrom park where vehicle was picked
+     */
+<span class="fc" id="L69">    public Rental(User user, Vehicle vehicle, Park parkFrom) {</span>
+<span class="fc" id="L70">        this.idRental = 0;</span>
+<span class="fc" id="L71">        this.user = user;</span>
+<span class="fc" id="L72">        this.vehicle = vehicle;</span>
+<span class="fc" id="L73">        this.parkFrom = parkFrom;</span>
+<span class="fc" id="L74">        this.parkTo = null;</span>
+<span class="fc" id="L75">        this.cost = 0;</span>
+<span class="fc" id="L76">        this.beginDateHour = String.valueOf(System.currentTimeMillis());</span>
+<span class="fc" id="L77">        this.endDateHour = null;</span>
+<span class="fc" id="L78">        this.duration = 0;</span>
+<span class="fc" id="L79">        this.earnedPoints = 0;</span>
+<span class="fc" id="L80">    }</span>
+
+    /**
+     *
+     * @return rental id
+     */
+    public int getIdRental() {
+<span class="fc" id="L87">        return idRental;</span>
+    }
+    
+    /**
+     * 
+     * @return user
+     */
+    public User getUser() {
+<span class="fc" id="L95">        return user;</span>
+    }
+    
+    /**
+     * 
+     * @return vehicle
+     */
+    public Vehicle getVehicle() {
+<span class="fc" id="L103">        return vehicle;</span>
+    }
+    
+    /**
+     * 
+     * @return park origin
+     */
+    public Park getParkFrom() {
+<span class="fc" id="L111">        return parkFrom;</span>
+    }
+    
+    /**
+     * 
+     * @return park destiny
+     */
+    public Park getParkTo() {
+<span class="fc" id="L119">        return parkTo;</span>
+    }
+    
+    /**
+     *
+     * @return rental cost
+     */
+    public double getCost() {
+<span class="fc" id="L127">        return cost;</span>
+    }
+
+    /**
+     *
+     * @return rental beginDateHour
+     */
+    public String getBeginDateHour() {
+<span class="fc" id="L135">        return beginDateHour;</span>
+    }
+    
+    /**
+     * 
+     * @return end date hour
+     */
+    public String getEndDateHour() {
+<span class="fc" id="L143">        return endDateHour;</span>
+    }
+    
+    /**
+     *
+     * @return rental duration
+     */
+    public int getDuration() {
+<span class="fc" id="L151">        return duration;</span>
+    }
+
+    /**
+     * 
+     * @return earned points 
+     */
+    public int getEarnedPoints() {
+<span class="fc" id="L159">        return earnedPoints;</span>
+    }
+
+    /**
+     *
+     * @param idRental new id to be set in caller object
+     */
+    public void setIdRental(int idRental) {
+<span class="fc" id="L167">        this.idRental = idRental;</span>
+<span class="fc" id="L168">    }</span>
+
+    /**
+     * 
+     * @param user new user
+     */
+    public void setUser(User user) {
+<span class="fc" id="L175">        this.user = user;</span>
+<span class="fc" id="L176">    }</span>
+    
+    /**
+     * 
+     * @param vehicle new vehicle
+     */
+    public void setVehicle(Vehicle vehicle) {
+<span class="fc" id="L183">        this.vehicle = vehicle;</span>
+<span class="fc" id="L184">    }</span>
+
+    /**
+     * 
+     * @param parkFrom new park origin
+     */
+    public void setParkFrom(Park parkFrom) {
+<span class="fc" id="L191">        this.parkFrom = parkFrom;</span>
+<span class="fc" id="L192">    }</span>
+    
+    /**
+     * 
+     * @param parkTo new park destiny
+     */
+    public void setParkTo(Park parkTo) {
+<span class="fc" id="L199">        this.parkTo = parkTo;</span>
+<span class="fc" id="L200">    }</span>
+    
+    /**
+     *
+     * @param cost new cost to be set in caller object
+     */
+    public void setCost(double cost) {
+<span class="fc" id="L207">        this.cost = cost;</span>
+<span class="fc" id="L208">    }</span>
+
+    /**
+     *
+     * @param date new beginDateHour to be set in caller object
+     */
+    public void setBeginDateHour(String date) {
+<span class="fc" id="L215">        this.beginDateHour = date;</span>
+<span class="fc" id="L216">    }</span>
+    
+    /**
+     * 
+     * @param endDateHour new end date hour 
+     */
+    public void setEndDateHour(String endDateHour) {
+<span class="fc" id="L223">        this.endDateHour = endDateHour;</span>
+<span class="fc" id="L224">    }</span>
+    
+    /**
+     *
+     * @param duration new duration to be set in caller object
+     */
+    public void setDuration(int duration) {
+<span class="fc" id="L231">        this.duration = duration;</span>
+<span class="fc" id="L232">    }</span>
+
+    /**
+     * 
+     * @param earnedPoints new earned points by user in trip 
+     */
+    public void setEarnedPoints(int earnedPoints) {
+<span class="fc" id="L239">        this.earnedPoints = earnedPoints;</span>
+<span class="fc" id="L240">    }</span>
+    
+    /**
+     * compares the begin date hour of two rentals
+     * @param o Rental object being compared to called object
+     * @return 0 if equal, greater than 0 if callee is bigger, lesser than 0 if caller is bigger
+     */
+    @Override
+    public int compareTo(Rental o) {
+<span class="nc" id="L249">        return (int)(Long.parseLong(this.getBeginDateHour()) - Long.parseLong(o.getBeginDateHour()));</span>
+    }
+    
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>
