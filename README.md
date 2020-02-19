@@ -7,6 +7,12 @@ Ride Sharing Logo
 ![LOGO1.png](LAPR3FinalProject/Images/LOGO1.png)
 
 -----------------------------
+
+Store Front Mockup
+
+![STORE_FRONT.png](LAPR3FinalProject/Images/STORE_FRONT.png)
+
+-----------------------------
 Ride Sharing Twitter & App Store Templates Examples
 
 ![APP_TWITTER_EXAMPLE.jpg](LAPR3FinalProject/Images/APP_TWITTER_EXAMPLE.jpg)
