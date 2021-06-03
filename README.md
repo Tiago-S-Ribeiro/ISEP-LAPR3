@@ -305,5 +305,11 @@ You do not need to set a proxy.
 You can use existing dummy Oracle credentials available at http://bugmenot.com.
 
 -------------------------------
-
-
+This was the group I completed this unit course with:
+| Name               |
+| ------------------ |
+| Tiago Ribeiro      |
+| Ana Rita Veiga     |
+| Beatriz Ribeiro    |
+| Juliana Silva      |
+| Bernardo Carvalho  |
