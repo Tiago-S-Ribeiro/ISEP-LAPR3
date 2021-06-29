@@ -31,9 +31,9 @@ public class EmailHandler {
     }
 
     private static final String SMTP_SERVER = "smtp.gmail.com";
-    private static final String USERNAME = "lapr3.grupo25@gmail.com";
-    private static final String ACESS = "lapr3_2019_grupo25";
-    private static final String EMAIL_FROM = "lapr3.grupo25@gmail.com";
+    private static final String USERNAME = "email_from";
+    private static final String ACESS = "email_pass";
+    private static final String EMAIL_FROM = "email_from";
     private static final String EMAIL_SUBJECT = "Locked Vehicle Notification";
     private static final String EMAIL_TEXT = "<h1 align=\"center\">RIDE SHARING</h1>"
                                            + "<h4 align=\"center\">by: Grupo 25</h4>"
